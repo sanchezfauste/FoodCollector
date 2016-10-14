@@ -45,6 +45,7 @@ class Map {
     list<Point> getUnvisitedNeighbors(Point &p, set<Point> &visitedCells);
     Point getRandomPointOfList(list<Point> &points);
     void removeWall(Point &p, Point &neighbor);
+    vector<CellType> getRow(int row);
 
 };
 

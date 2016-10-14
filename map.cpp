@@ -96,6 +96,10 @@ void Map::setAreaCellsType(Point &initialPoint, Point &finalPoint, CellType ct) 
     }
 }
 
+vector<CellType> Map::getRow(int row) {
+    return cells[row];
+}
+
 void Map::print() {
     for (int row = 0; row < nRows; row += 1) {
         for (int col = 0; col < nCols; col += 1) {
