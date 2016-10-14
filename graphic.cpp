@@ -74,7 +74,7 @@ void Graphic::glutDisplay() {
     glutSwapBuffers();
 }
 
-void Graphic::glutKeyboard() {
+void Graphic::glutKeyboard(unsigned char key, int x, int y) {
     Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
     setMap(m);
     glutPostRedisplay();
@@ -85,5 +85,5 @@ void display() {
 }
 
 void keyboard(unsigned char c, int x, int y) {
-    Graphic::getInstance().glutKeyboard();
+    Graphic::getInstance().glutKeyboard(c, x, y);
 }

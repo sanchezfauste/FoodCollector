@@ -37,7 +37,7 @@ class Graphic {
     void glutInitialize(int *argcp, char **argv);
     void glutRun();
     void glutDisplay();
-    void glutKeyboard();
+    void glutKeyboard(unsigned char key, int x, int y);
 
 };
 
