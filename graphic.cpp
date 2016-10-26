@@ -8,6 +8,9 @@ const Color Graphic::wallColor = Color(0.0, 0.2, 1.0);
 
 const char* const Graphic::gameTitle = "Food Collection Game - Tuita Team";
 
+const int Graphic::cellWidth = 30;
+const int Graphic::cellHeight = 30;
+
 Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue) :
         red(red), green(green), blue(blue) {}
 
@@ -25,19 +28,27 @@ void Graphic::setMap(Map& map) {
     this->map = new Map(map);
 }
 
+int Graphic::getScreenWidth() {
+    return glutGet(GLUT_SCREEN_WIDTH);
+}
+
+int Graphic::getScreenHeight() {
+    return glutGet(GLUT_SCREEN_HEIGHT);
+}
+
 void Graphic::setGlutDimensions(int width, int height) {
     this->width = width;
     this->height = height;
-}
-
-void Graphic::glutInitialize(int *argcp, char **argv) {
-    glutInit(argcp, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowPosition(0, 0);
     glutInitWindowSize(width, height);
     glutCreateWindow(Graphic::gameTitle);
     glMatrixMode(GL_PROJECTION);
     gluOrtho2D(0, width-1, 0, height-1);
+}
+
+void Graphic::glutInitialize(int *argcp, char **argv) {
+    glutInit(argcp, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 }
 
 void Graphic::glutRun() {
@@ -47,8 +58,6 @@ void Graphic::glutRun() {
 }
 
 void Graphic::glutDisplay() {
-    int cellWidth = width/map->getNumberOfCols();
-    int cellHeight = height/map->getNumberOfRows();
     glClearColor(Graphic::backgroundColor.red, Graphic::backgroundColor.green,
             Graphic::backgroundColor.blue, 0.0);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -60,10 +69,10 @@ void Graphic::glutDisplay() {
                     glColor3f(Graphic::wallColor.red, Graphic::wallColor.green,
                             Graphic::wallColor.blue);
                     glBegin(GL_QUADS);
-                    glVertex2i(col*cellWidth, row*cellHeight);
-                    glVertex2i(col*cellWidth, (row+1)*cellHeight);
-                    glVertex2i((col+1)*cellWidth, (row+1)*cellHeight);
-                    glVertex2i((col+1)*cellWidth, row*cellHeight);
+                    glVertex2i(col*Graphic::cellWidth, row*Graphic::cellHeight);
+                    glVertex2i(col*Graphic::cellWidth, (row+1)*Graphic::cellHeight);
+                    glVertex2i((col+1)*Graphic::cellWidth, (row+1)*Graphic::cellHeight);
+                    glVertex2i((col+1)*Graphic::cellWidth, row*Graphic::cellHeight);
                     glEnd();
                     break;
                 case Corridor:

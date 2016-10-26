@@ -4,6 +4,9 @@
 
 using namespace std;
 
+const int Map::minRows = 3;
+const int Map::minCols = 3;
+
 Point::Point(const int row, const int col) : row(row), col(col){}
 
 bool Point::operator<(const Point &p) const {

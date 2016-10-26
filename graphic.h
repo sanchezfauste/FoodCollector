@@ -31,6 +31,9 @@ class Graphic {
     void operator=(Graphic const&);
 
   public:
+    static const int cellWidth;
+    static const int cellHeight;
+
     static Graphic& getInstance();
     void setMap(Map& map);
     void setGlutDimensions(int width, int height);
@@ -38,6 +41,8 @@ class Graphic {
     void glutRun();
     void glutDisplay();
     void glutKeyboard(unsigned char key, int x, int y);
+    int getScreenWidth();
+    int getScreenHeight();
 
 };
 

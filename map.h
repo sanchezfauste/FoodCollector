@@ -32,6 +32,9 @@ class Map {
     const int nRows, nCols;
 
   public:
+    static const int minRows;
+    static const int minCols;
+
     Map(const int nRows, const int nCols);
     void print();
     void copySymmetricLeftToRight();

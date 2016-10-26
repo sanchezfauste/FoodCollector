@@ -11,12 +11,24 @@ int main(int argc, char **argv) {
         cout << "Use: " << argv[0] << " <nRows> <nCols>" << endl;
         return 1;
     }
+    int graphicWidth = atoi(argv[2]) * Graphic::cellWidth;
+    int graphicHeight = atoi(argv[1]) * Graphic::cellHeight;
+    Graphic& g = Graphic::getInstance();
+    g.glutInitialize(&argc, argv);
+    if (graphicWidth > g.getScreenWidth() || graphicHeight > g.getScreenHeight()
+            || atoi(argv[1]) < Map::minRows || atoi(argv[2]) < Map::minCols) {
+        cout << "ERROR: Incorrect map dimmensions!" << endl;
+        cout << "Use: " << argv[0] << " <nRows> <nCols>" << endl;
+        cout << "    <nRows> must be between [" << Map::minRows << ", "
+                << g.getScreenHeight() / Graphic::cellHeight << "]" << endl;
+        cout << "    <nCols> must be between [" << Map::minCols << ", "
+                << g.getScreenWidth() / Graphic::cellWidth << "]" << endl;
+        exit(1);
+    }
+    g.setGlutDimensions(graphicWidth, graphicHeight);
     Map map = MapGenerator(atoi(argv[1]), atoi(argv[2])).getMap();
     map.print();
-    Graphic& g = Graphic::getInstance();
     g.setMap(map);
-    g.setGlutDimensions(650, 310);
-    g.glutInitialize(&argc, argv);
     g.glutRun();
     return 0;
 }
