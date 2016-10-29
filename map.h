@@ -1,3 +1,8 @@
+/* 
+Copyright (C) 2016 Meritxell Jordana
+Copyright (C) 2016 Marc Sanchez
+*/
+
 #ifndef __MAP_H
 #define __MAP_H
 

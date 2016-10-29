@@ -1,3 +1,8 @@
+/* 
+Copyright (C) 2016 Meritxell Jordana
+Copyright (C) 2016 Marc Sanchez
+*/
+
 #include "map.h"
 #include <iostream>
 #include <cstdlib>
