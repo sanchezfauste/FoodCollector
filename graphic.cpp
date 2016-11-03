@@ -84,30 +84,25 @@ void Graphic::glutDisplay() {
         for (int col = 0; col < map->getNumberOfCols(); col += 1) {
             switch (rowCells[col]) {
                 case Wall:
-                    glColor3f(Graphic::wallColor.red, Graphic::wallColor.green,
-                            Graphic::wallColor.blue);
-                    glBegin(GL_QUADS);
-                    glVertex2i(col*Graphic::cellWidth, row*Graphic::cellHeight);
-                    glVertex2i(col*Graphic::cellWidth, (row+1)*Graphic::cellHeight);
-                    glVertex2i((col+1)*Graphic::cellWidth, (row+1)*Graphic::cellHeight);
-                    glVertex2i((col+1)*Graphic::cellWidth, row*Graphic::cellHeight);
-                    glEnd();
+                    Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
+                            Graphic::cellHeight, 0, 0, Graphic::wallColor);
                     break;
                 case Corridor:
                     break;
                 case Food:
-                    glColor3f(Graphic::foodColor.red, Graphic::foodColor.green,
-                            Graphic::foodColor.blue);
-                    glBegin(GL_QUADS);
-                    glVertex2i(col*Graphic::cellWidth + Graphic::foodWidthPadding,
-                            row*Graphic::cellHeight + Graphic::foodHeightPadding);
-                    glVertex2i(col*Graphic::cellWidth + Graphic::foodWidthPadding,
-                            (row+1)*Graphic::cellHeight - Graphic::foodHeightPadding);
-                    glVertex2i((col+1)*Graphic::cellWidth - Graphic::foodWidthPadding,
-                            (row+1)*Graphic::cellHeight - Graphic::foodHeightPadding);
-                    glVertex2i((col+1)*Graphic::cellWidth - Graphic::foodWidthPadding,
-                            row*Graphic::cellHeight + Graphic::foodHeightPadding);
-                    glEnd();
+                    Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
+                            Graphic::cellHeight, Graphic::foodWidthPadding,
+                            Graphic::foodHeightPadding, Graphic::foodColor);
+                    break;
+                case Player:
+                    Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
+                            Graphic::cellHeight, Graphic::playerWidthPadding,
+                            Graphic::playerHeightPadding, Graphic::playerColor);
+                    break;
+                case Enemy:
+                    Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
+                            Graphic::cellHeight, Graphic::playerWidthPadding,
+                            Graphic::playerHeightPadding, Graphic::enemyColor);
                     break;
             }
         }
@@ -127,4 +122,15 @@ void display() {
 
 void keyboard(unsigned char c, int x, int y) {
     Graphic::getInstance().glutKeyboard(c, x, y);
+}
+
+void Graphic::drawSquareWithPadding(int row, int col, int width, int height,
+            int widthPadding, int heightPadding, Color color) {
+    glColor3f(color.red, color.green, color.blue);
+    glBegin(GL_QUADS);
+    glVertex2i(col*width + widthPadding, row*height + heightPadding);
+    glVertex2i(col*width + widthPadding, (row+1)*height - heightPadding);
+    glVertex2i((col+1)*width - widthPadding, (row+1)*height - heightPadding);
+    glVertex2i((col+1)*width - widthPadding, row*height + heightPadding);
+    glEnd();
 }

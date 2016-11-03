@@ -22,6 +22,8 @@ Map MapGenerator::getMap() {
     m.setSubColCellType(map.getNumberOfCols() - 1,
             1, map.getNumberOfRows() - 1, Food);
     m.copySymmetricLeftToRight();
+    m.setPlayerPosition(Point(1, 1));
+    m.setEnemyPosition(Point(1, nCols - 2));
     return m;
 }
 

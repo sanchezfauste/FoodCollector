@@ -14,12 +14,16 @@ const int Map::minCols = 3;
 
 Point::Point(const int row, const int col) : row(row), col(col){}
 
+Point::Point() : row(-1), col(-1){}
+
 bool Point::operator<(const Point &p) const {
     return (row == p.row) ? col < p.col : row < p.row;
 }
 
 Map::Map(const int nRows, const int nCols) : nRows(nRows), nCols(nCols) {
     cells.assign(nRows, vector<CellType>(nCols, Wall));
+    playerPosition = new Point();
+    enemyPosition = new Point();
 }
 
 bool Map::allCellsVisited(set<Point> &visited) {
@@ -121,8 +125,40 @@ void Map::print() {
                 case Corridor:
                     cout << "  ";
                     break;
+                case Player:
+                    cout << "P ";
+                    break;
+                case Enemy:
+                    cout << "E ";
+                    break;
             }
         }
         cout << endl;
     }
+}
+
+void Map::setPlayerPosition(Point p) {
+    if (playerPosition->row != -1 || playerPosition->col != -1) {
+        cells[playerPosition->row][playerPosition->col] = Corridor;
+    }
+    cells[p.row][p.col] = Player;
+    delete(playerPosition);
+    playerPosition = new Point(p);
+}
+
+void Map::setEnemyPosition(Point p) {
+    if (enemyPosition->row != -1 || enemyPosition->col != -1) {
+        cells[enemyPosition->row][enemyPosition->col] = Corridor;
+    }
+    cells[p.row][p.col] = Enemy;
+    delete(enemyPosition);
+    enemyPosition = new Point(p);
+}
+
+Point Map::getPlayerPosition() {
+    return Point(playerPosition->row, playerPosition->col);
+}
+
+Point Map::getEnemyPosition() {
+    return Point(enemyPosition->row, enemyPosition->col);
 }

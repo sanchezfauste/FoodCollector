@@ -59,6 +59,8 @@ class Graphic {
     void glutKeyboard(unsigned char key, int x, int y);
     int getScreenWidth();
     int getScreenHeight();
+    static void drawSquareWithPadding(int row, int col, int width, int height,
+            int widthPadding, int heightPadding, Color color);
 
 };
 

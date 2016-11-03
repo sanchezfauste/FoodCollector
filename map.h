@@ -15,7 +15,9 @@ using namespace std;
 enum CellType {
     Wall,
     Corridor,
-    Food
+    Food,
+    Player,
+    Enemy
 };
 
 enum Direction {
@@ -29,6 +31,7 @@ typedef struct Point {
     const int row;
     const int col;
     Point(const int row, const int col);
+    Point();
     bool operator<(const Point &p) const;
 } Point;
 
@@ -36,6 +39,8 @@ class Map {
 
     vector<vector<CellType> > cells;
     const int nRows, nCols;
+    Point *playerPosition;
+    Point *enemyPosition;
 
   public:
     static const int minRows;
@@ -55,6 +60,10 @@ class Map {
     Point getRandomPointOfList(list<Point> &points);
     void removeWall(Point &p, Point &neighbor);
     vector<CellType> getRow(int row);
+    void setPlayerPosition(Point p);
+    void setEnemyPosition(Point p);
+    Point getPlayerPosition();
+    Point getEnemyPosition();
 
 };
 
