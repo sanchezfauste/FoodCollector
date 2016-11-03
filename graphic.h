@@ -25,6 +25,7 @@ class Graphic {
 
     static const Color backgroundColor;
     static const Color wallColor;
+    static const Color foodColor;
     static const char* const gameTitle;
 
     Map* map;
@@ -38,6 +39,10 @@ class Graphic {
   public:
     static const int cellWidth;
     static const int cellHeight;
+    static const int foodWidth;
+    static const int foodHeight;
+    static const int foodWidthPadding;
+    static const int foodHeightPadding;
 
     static Graphic& getInstance();
     void setMap(Map& map);

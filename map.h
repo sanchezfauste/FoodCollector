@@ -14,7 +14,8 @@ using namespace std;
 
 enum CellType {
     Wall,
-    Corridor
+    Corridor,
+    Food
 };
 
 enum Direction {

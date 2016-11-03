@@ -46,15 +46,15 @@ list<Point> Map::getNeighbors(Point &p) {
 }
 
 void Map::removeWall(Point &p, Point &neighbor) {
-    cells[p.row][p.col] = Corridor;
+    cells[p.row][p.col] = Food;
     if (neighbor.row > p.row) {
-        cells[p.row+1][p.col] = Corridor;
+        cells[p.row+1][p.col] = Food;
     } else if (neighbor.row < p.row) {
-        cells[p.row-1][p.col] = Corridor;
+        cells[p.row-1][p.col] = Food;
     } else if (neighbor.col > p.col) {
-        cells[p.row][p.col+1] = Corridor;
+        cells[p.row][p.col+1] = Food;
     } else if (neighbor.col < p.col) {
-        cells[p.row][p.col-1] = Corridor;
+        cells[p.row][p.col-1] = Food;
     }
 }
 
@@ -115,8 +115,11 @@ void Map::print() {
                 case Wall:
                     cout << "0 ";
                     break;
-                case Corridor:
+                case Food:
                     cout << "· ";
+                    break;
+                case Corridor:
+                    cout << "  ";
                     break;
             }
         }

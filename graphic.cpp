@@ -10,11 +10,16 @@ using namespace std;
 
 const Color Graphic::backgroundColor = Color(0.0, 0.0, 0.0);
 const Color Graphic::wallColor = Color(0.0, 0.2, 1.0);
+const Color Graphic::foodColor = Color(1.0, 0.64, 0);
 
 const char* const Graphic::gameTitle = "Food Collection Game - Tuita Team";
 
 const int Graphic::cellWidth = 30;
 const int Graphic::cellHeight = 30;
+const int Graphic::foodWidth = 6;
+const int Graphic::foodHeight = 6;
+const int Graphic::foodWidthPadding = (Graphic::cellWidth - Graphic::foodWidth) / 2;
+const int Graphic::foodHeightPadding = (Graphic::cellHeight - Graphic::foodHeight) / 2;
 
 Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue) :
         red(red), green(green), blue(blue) {}
@@ -81,6 +86,20 @@ void Graphic::glutDisplay() {
                     glEnd();
                     break;
                 case Corridor:
+                    break;
+                case Food:
+                    glColor3f(Graphic::foodColor.red, Graphic::foodColor.green,
+                            Graphic::foodColor.blue);
+                    glBegin(GL_QUADS);
+                    glVertex2i(col*Graphic::cellWidth + Graphic::foodWidthPadding,
+                            row*Graphic::cellHeight + Graphic::foodHeightPadding);
+                    glVertex2i(col*Graphic::cellWidth + Graphic::foodWidthPadding,
+                            (row+1)*Graphic::cellHeight - Graphic::foodHeightPadding);
+                    glVertex2i((col+1)*Graphic::cellWidth - Graphic::foodWidthPadding,
+                            (row+1)*Graphic::cellHeight - Graphic::foodHeightPadding);
+                    glVertex2i((col+1)*Graphic::cellWidth - Graphic::foodWidthPadding,
+                            row*Graphic::cellHeight + Graphic::foodHeightPadding);
+                    glEnd();
                     break;
             }
         }

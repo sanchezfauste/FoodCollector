@@ -20,7 +20,7 @@ Map MapGenerator::getMap() {
     Map m = Map(nRows, nCols);
     m.copySubMap(map, Point(0, 0));
     m.setSubColCellType(map.getNumberOfCols() - 1,
-            1, map.getNumberOfRows() - 1, Corridor);
+            1, map.getNumberOfRows() - 1, Food);
     m.copySymmetricLeftToRight();
     return m;
 }
