@@ -11,6 +11,8 @@ using namespace std;
 const Color Graphic::backgroundColor = Color(0.0, 0.0, 0.0);
 const Color Graphic::wallColor = Color(0.0, 0.2, 1.0);
 const Color Graphic::foodColor = Color(1.0, 0.64, 0);
+const Color Graphic::playerColor = Color(0.13, 0.54, 0.13);
+const Color Graphic::enemyColor = Color(0.7, 0.13, 0.13);
 
 const char* const Graphic::gameTitle = "Food Collection Game - Tuita Team";
 
@@ -20,6 +22,12 @@ const int Graphic::foodWidth = 6;
 const int Graphic::foodHeight = 6;
 const int Graphic::foodWidthPadding = (Graphic::cellWidth - Graphic::foodWidth) / 2;
 const int Graphic::foodHeightPadding = (Graphic::cellHeight - Graphic::foodHeight) / 2;
+const int Graphic::playerWidth = 10;
+const int Graphic::playerHeight = 10;
+const int Graphic::playerWidthPadding =
+        (Graphic::cellWidth - Graphic::playerWidth) / 2;
+const int Graphic::playerHeightPadding =
+        (Graphic::cellHeight - Graphic::playerHeight) / 2;
 
 Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue) :
         red(red), green(green), blue(blue) {}

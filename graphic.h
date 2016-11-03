@@ -26,6 +26,8 @@ class Graphic {
     static const Color backgroundColor;
     static const Color wallColor;
     static const Color foodColor;
+    static const Color playerColor;
+    static const Color enemyColor;
     static const char* const gameTitle;
 
     Map* map;
@@ -43,6 +45,10 @@ class Graphic {
     static const int foodHeight;
     static const int foodWidthPadding;
     static const int foodHeightPadding;
+    static const int playerWidth;
+    static const int playerHeight;
+    static const int playerWidthPadding;
+    static const int playerHeightPadding;
 
     static Graphic& getInstance();
     void setMap(Map& map);
