@@ -17,13 +17,12 @@ MapGenerator::MapGenerator(const int nRows, const int nCols) :
 }
 
 Map MapGenerator::getMap() {
-    Map m = Map(nRows, nCols);
+    Map m = Map(nRows, nCols, Point(1, 1), Point(1, nCols - 2));
     m.copySubMap(map, Point(0, 0));
     m.setSubColCellType(map.getNumberOfCols() - 1,
             1, map.getNumberOfRows() - 1, Food);
     m.copySymmetricLeftToRight();
-    m.setPlayerPosition(Point(1, 1));
-    m.setEnemyPosition(Point(1, nCols - 2));
+    m.initGame();
     return m;
 }
 

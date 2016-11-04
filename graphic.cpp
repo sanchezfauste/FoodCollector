@@ -111,8 +111,24 @@ void Graphic::glutDisplay() {
 }
 
 void Graphic::glutKeyboard(unsigned char key, int x, int y) {
-    Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
-    setMap(m);
+    switch (key) {
+        case 'w':
+            map->playerMove(Up);
+            break;
+        case 's':
+            map->playerMove(Down);
+            break;
+        case 'a':
+            map->playerMove(Left);
+            break;
+        case 'd':
+            map->playerMove(Right);
+            break;
+        default:
+            Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
+            setMap(m);
+            break;
+    }
     glutPostRedisplay();
 }
 

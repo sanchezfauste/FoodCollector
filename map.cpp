@@ -20,7 +20,20 @@ bool Point::operator<(const Point &p) const {
     return (row == p.row) ? col < p.col : row < p.row;
 }
 
-Map::Map(const int nRows, const int nCols) : nRows(nRows), nCols(nCols) {
+Map::Map(const int nRows, const int nCols) : nRows(nRows), nCols(nCols),
+        eatedFoodByPlayer(0), eatedFoodByEnemy(0),
+        playerInitialPosition(Point(1, 1)),
+        enemyInitialPosition(Point(1, nCols - 2)) {
+    cells.assign(nRows, vector<CellType>(nCols, Wall));
+    playerPosition = new Point();
+    enemyPosition = new Point();
+}
+
+Map::Map(const int nRows, const int nCols, const Point playerInitialPosition,
+        const Point enemyInitialPosition) : nRows(nRows), nCols(nCols),
+                eatedFoodByPlayer(0), eatedFoodByEnemy(0),
+                playerInitialPosition(playerInitialPosition),
+                enemyInitialPosition(enemyInitialPosition) {
     cells.assign(nRows, vector<CellType>(nCols, Wall));
     playerPosition = new Point();
     enemyPosition = new Point();
@@ -161,4 +174,77 @@ Point Map::getPlayerPosition() {
 
 Point Map::getEnemyPosition() {
     return Point(enemyPosition->row, enemyPosition->col);
+}
+
+void Map::playerMove(Direction d) {
+    Point neighborPoint = getNeighborPoint(getPlayerPosition(), d);
+    CellType neighborCellType = getPointCellType(neighborPoint);
+    switch (neighborCellType) {
+        case Wall:
+            break;
+        case Food:
+            eatFood(neighborPoint, Player);
+        case Corridor:
+            setPlayerPosition(neighborPoint);
+            break;
+        case Enemy:
+            setPlayerPosition(playerInitialPosition);
+            break;
+        default:
+            break;
+    }
+}
+
+void Map::eatFood(Point p, CellType player) {
+    if (cells[p.row][p.col] == Food) {
+        cells[p.row][p.col] = Corridor;
+        numberOfAvailableFood -= 1;
+        if (player == Player) {
+            eatedFoodByPlayer += 1;
+        } else if (player == Enemy) {
+            eatedFoodByEnemy += 1;
+        }
+    }
+}
+
+CellType Map::getPointCellType(Point p) {
+    return cells[p.row][p.col];
+}
+
+Point Map::getNeighborPoint(Point p, Direction d) {
+    switch (d) {
+        case Up:
+            return Point(p.row-1, p.col);
+        case Down:
+            return Point(p.row+1, p.col);
+        case Left:
+            return Point(p.row, p.col-1);
+        case Right:
+            return Point(p.row, p.col+1);
+        default:
+            return p;
+    }
+}
+
+int Map::getEatedFoodByPlayer() {
+    return eatedFoodByPlayer;
+}
+int Map::getEatedFoodByEnemy() {
+    return eatedFoodByEnemy;
+}
+
+void Map::initGame() {
+    setPlayerPosition(playerInitialPosition);
+    setEnemyPosition(enemyInitialPosition);
+    numberOfAvailableFood = getNumberOfAvailableFood();
+}
+
+int Map::getNumberOfAvailableFood() {
+    int availableFood = 0;
+    for (int row = 0; row < nRows; row += 1) {
+        for (int col = 0; col < nCols; col += 1) {
+            if (cells[row][col] == Food) availableFood += 1;
+        }
+    }
+    return availableFood;
 }

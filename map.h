@@ -41,12 +41,22 @@ class Map {
     const int nRows, nCols;
     Point *playerPosition;
     Point *enemyPosition;
+    int eatedFoodByPlayer;
+    int eatedFoodByEnemy;
+    const Point playerInitialPosition;
+    const Point enemyInitialPosition;
+    int numberOfAvailableFood;
+
+    int getNumberOfAvailableFood();
+    void eatFood(Point p, CellType player);
 
   public:
     static const int minRows;
     static const int minCols;
 
     Map(const int nRows, const int nCols);
+    Map(const int nRows, const int nCols, const Point playerInitialPosition,
+            const Point enemyInitialPosition);
     void print();
     void copySymmetricLeftToRight();
     int getNumberOfRows();
@@ -64,6 +74,12 @@ class Map {
     void setEnemyPosition(Point p);
     Point getPlayerPosition();
     Point getEnemyPosition();
+    void playerMove(Direction d);
+    CellType getPointCellType(Point p);
+    Point getNeighborPoint(Point p, Direction d);
+    int getEatedFoodByPlayer();
+    int getEatedFoodByEnemy();
+    void initGame();
 
 };
 
