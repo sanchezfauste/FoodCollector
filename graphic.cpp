@@ -152,6 +152,7 @@ void Graphic::glutKeyboard(unsigned char key, int x, int y) {
 void Graphic::playerMove(Direction d) {
     if (playerParticle.getState() != Moving) {
         if (map->playerCanMoveTo(d)) {
+            map->setCurrentPlayerDirection(d);
             float widthTranslation = 0;
             float heightTranslation = 0;
             switch (d) {
@@ -167,10 +168,14 @@ void Graphic::playerMove(Direction d) {
                 case Right:
                     widthTranslation = Graphic::cellWidth;
                     break;
+                default:
+                    break;
             }
             playerParticle.initMovement(widthTranslation, heightTranslation,
                     Graphic::playerMovementTime, d);
         }
+    } else {
+        map->setNextPlayerDirection(d);
     }
 }
 
@@ -218,7 +223,15 @@ void Graphic::glutIdle() {
         long elapsedTime = t - lastTime;
         if (playerParticle.getState() == Moving) {
             if (playerParticle.integrate(elapsedTime)) {
+                Direction nextPlayerDirection = map->getNextPlayerDirection();
                 map->playerMove(playerParticle.getDirection());
+                if (nextPlayerDirection != None
+                        && map->playerCanMoveTo(nextPlayerDirection)) {
+                    playerMove(nextPlayerDirection);
+                    map->setNextPlayerDirection(None);
+                } else {
+                    playerMove(map->getCurrentPlayerDirection());
+                }
             }
         }
         if (enemyParticle.getState() == Moving) {

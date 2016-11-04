@@ -24,7 +24,8 @@ enum Direction {
     Up,
     Down,
     Left,
-    Right
+    Right,
+    None
 };
 
 typedef struct Point {
@@ -46,6 +47,8 @@ class Map {
     const Point playerInitialPosition;
     const Point enemyInitialPosition;
     int numberOfAvailableFood;
+    Direction currentPlayerDirection;
+    Direction nextPlayerDirection;
 
     int getNumberOfAvailableFood();
     void eatFood(Point p, CellType player);
@@ -81,6 +84,10 @@ class Map {
     int getEatedFoodByPlayer();
     int getEatedFoodByEnemy();
     void initGame();
+    Direction getCurrentPlayerDirection();
+    Direction getNextPlayerDirection();
+    void setCurrentPlayerDirection(Direction d);
+    void setNextPlayerDirection(Direction d);
 
 };
 

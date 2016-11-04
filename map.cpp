@@ -189,6 +189,8 @@ void Map::playerMove(Direction d) {
             break;
         case Enemy:
             setPlayerPosition(playerInitialPosition);
+            currentPlayerDirection = None;
+            nextPlayerDirection = None;
             break;
         default:
             break;
@@ -242,6 +244,8 @@ void Map::initGame() {
     setPlayerPosition(playerInitialPosition);
     setEnemyPosition(enemyInitialPosition);
     numberOfAvailableFood = getNumberOfAvailableFood();
+    currentPlayerDirection = None;
+    nextPlayerDirection = None;
 }
 
 int Map::getNumberOfAvailableFood() {
@@ -252,4 +256,19 @@ int Map::getNumberOfAvailableFood() {
         }
     }
     return availableFood;
+}
+
+Direction Map::getCurrentPlayerDirection() {
+    return currentPlayerDirection;
+}
+
+Direction Map::getNextPlayerDirection() {
+    return nextPlayerDirection;
+}
+
+void Map::setCurrentPlayerDirection(Direction d) {
+    currentPlayerDirection = d;
+}
+void Map::setNextPlayerDirection(Direction d) {
+    nextPlayerDirection = d;
 }
