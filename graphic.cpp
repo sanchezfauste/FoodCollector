@@ -217,6 +217,7 @@ void Graphic::drawSquareWithPadding(int row, int col, int width, int height,
 
 void Graphic::glutIdle() {
     long t = glutGet(GLUT_ELAPSED_TIME);
+    bool redraw = false;
     if (lastTime == 0) {
         lastTime = t;
     } else {
@@ -233,11 +234,13 @@ void Graphic::glutIdle() {
                     playerMove(map->getCurrentPlayerDirection());
                 }
             }
+            redraw = true;
         }
         if (enemyParticle.getState() == Moving) {
             enemyParticle.integrate(elapsedTime);
+            redraw = true;
         }
         lastTime = t;
     }
-    glutPostRedisplay();
+    if (redraw) glutPostRedisplay();
 }
