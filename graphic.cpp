@@ -28,11 +28,12 @@ const int Graphic::playerWidthPadding =
         (Graphic::cellWidth - Graphic::playerWidth) / 2;
 const int Graphic::playerHeightPadding =
         (Graphic::cellHeight - Graphic::playerHeight) / 2;
+const long Graphic::playerMovementTime = 200;
 
 Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue) :
         red(red), green(green), blue(blue) {}
 
-Graphic::Graphic() {}
+Graphic::Graphic() : playerParticle(Particle()), enemyParticle(Particle()) {}
 
 Graphic& Graphic::getInstance() {
     static Graphic instance;
@@ -72,6 +73,8 @@ void Graphic::glutInitialize(int *argcp, char **argv) {
 void Graphic::glutRun() {
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
+    glutIdleFunc(idle);
+    lastTime = 0;
     glutMainLoop();
 }
 
@@ -95,9 +98,7 @@ void Graphic::glutDisplay() {
                             Graphic::foodHeightPadding, Graphic::foodColor);
                     break;
                 case Player:
-                    Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
-                            Graphic::cellHeight, Graphic::playerWidthPadding,
-                            Graphic::playerHeightPadding, Graphic::playerColor);
+                    printPlayer(row, col);
                     break;
                 case Enemy:
                     Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
@@ -110,19 +111,35 @@ void Graphic::glutDisplay() {
     glutSwapBuffers();
 }
 
+void Graphic::printPlayer(int row, int col) {
+    switch (playerParticle.getState()) {
+        case Quiet:
+            Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
+                    Graphic::cellHeight, Graphic::playerWidthPadding,
+                    Graphic::playerHeightPadding, Graphic::playerColor);
+            break;
+        case Moving:
+            Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
+                    Graphic::cellHeight, Graphic::playerWidthPadding,
+                    Graphic::playerHeightPadding, Graphic::playerColor,
+                    playerParticle);
+            break;
+    }
+}
+
 void Graphic::glutKeyboard(unsigned char key, int x, int y) {
     switch (key) {
         case 'w':
-            map->playerMove(Up);
+            playerMove(Up);
             break;
         case 's':
-            map->playerMove(Down);
+            playerMove(Down);
             break;
         case 'a':
-            map->playerMove(Left);
+            playerMove(Left);
             break;
         case 'd':
-            map->playerMove(Right);
+            playerMove(Right);
             break;
         default:
             Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
@@ -132,12 +149,41 @@ void Graphic::glutKeyboard(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+void Graphic::playerMove(Direction d) {
+    if (playerParticle.getState() != Moving) {
+        if (map->playerCanMoveTo(d)) {
+            float widthTranslation = 0;
+            float heightTranslation = 0;
+            switch (d) {
+                case Up:
+                    heightTranslation = Graphic::cellHeight;
+                    break;
+                case Down:
+                    heightTranslation = - Graphic::cellHeight;
+                    break;
+                case Left:
+                    widthTranslation = - Graphic::cellWidth;
+                    break;
+                case Right:
+                    widthTranslation = Graphic::cellWidth;
+                    break;
+            }
+            playerParticle.initMovement(widthTranslation, heightTranslation,
+                    Graphic::playerMovementTime, d);
+        }
+    }
+}
+
 void display() {
     Graphic::getInstance().glutDisplay();
 }
 
 void keyboard(unsigned char c, int x, int y) {
     Graphic::getInstance().glutKeyboard(c, x, y);
+}
+
+void idle() {
+    Graphic::getInstance().glutIdle();
 }
 
 void Graphic::drawSquareWithPadding(int row, int col, int width, int height,
@@ -149,4 +195,36 @@ void Graphic::drawSquareWithPadding(int row, int col, int width, int height,
     glVertex2i((col+1)*width - widthPadding, (row+1)*height - heightPadding);
     glVertex2i((col+1)*width - widthPadding, row*height + heightPadding);
     glEnd();
+}
+
+void Graphic::drawSquareWithPadding(int row, int col, int width, int height,
+        int widthPadding, int heightPadding, Color color, Particle &p) {
+    long widthTranslation = p.getCurrentWidthTranslation();
+    long heightTranslation = p.getCurrentHeightTranslation();
+    glColor3f(color.red, color.green, color.blue);
+    glBegin(GL_QUADS);
+    glVertex2i(col*width + widthPadding + widthTranslation, row*height + heightPadding + heightTranslation);
+    glVertex2i(col*width + widthPadding + widthTranslation, (row+1)*height - heightPadding + heightTranslation);
+    glVertex2i((col+1)*width - widthPadding + widthTranslation, (row+1)*height - heightPadding + heightTranslation);
+    glVertex2i((col+1)*width - widthPadding + widthTranslation, row*height + heightPadding + heightTranslation);
+    glEnd();
+}
+
+void Graphic::glutIdle() {
+    long t = glutGet(GLUT_ELAPSED_TIME);
+    if (lastTime == 0) {
+        lastTime = t;
+    } else {
+        long elapsedTime = t - lastTime;
+        if (playerParticle.getState() == Moving) {
+            if (playerParticle.integrate(elapsedTime)) {
+                map->playerMove(playerParticle.getDirection());
+            }
+        }
+        if (enemyParticle.getState() == Moving) {
+            enemyParticle.integrate(elapsedTime);
+        }
+        lastTime = t;
+    }
+    glutPostRedisplay();
 }

@@ -195,6 +195,11 @@ void Map::playerMove(Direction d) {
     }
 }
 
+bool Map::playerCanMoveTo(Direction d) {
+    Point neighborPoint = getNeighborPoint(getPlayerPosition(), d);
+    return getPointCellType(neighborPoint) != Wall;
+}
+
 void Map::eatFood(Point p, CellType player) {
     if (cells[p.row][p.col] == Food) {
         cells[p.row][p.col] = Corridor;

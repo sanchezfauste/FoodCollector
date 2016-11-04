@@ -7,6 +7,7 @@ Copyright (C) 2016 Marc Sanchez
 #define __GRAPHIC_H
 
 #include "map.h"
+#include "particle.h"
 #include <GL/glut.h>
 
 using namespace std;
@@ -20,6 +21,7 @@ typedef struct Color {
 
 void display();
 void keyboard(unsigned char c, int x, int y);
+void idle();
 
 class Graphic {
 
@@ -33,10 +35,15 @@ class Graphic {
     Map* map;
     int width;
     int height;
+    Particle playerParticle;
+    Particle enemyParticle;
+    long lastTime;
 
     Graphic();
     Graphic(Graphic const&);
     void operator=(Graphic const&);
+    void playerMove(Direction d);
+    void printPlayer(int row, int col);
 
   public:
     static const int cellWidth;
@@ -49,6 +56,7 @@ class Graphic {
     static const int playerHeight;
     static const int playerWidthPadding;
     static const int playerHeightPadding;
+    static const long playerMovementTime;
 
     static Graphic& getInstance();
     void setMap(Map& map);
@@ -57,10 +65,13 @@ class Graphic {
     void glutRun();
     void glutDisplay();
     void glutKeyboard(unsigned char key, int x, int y);
+    void glutIdle();
     int getScreenWidth();
     int getScreenHeight();
     static void drawSquareWithPadding(int row, int col, int width, int height,
             int widthPadding, int heightPadding, Color color);
+    static void drawSquareWithPadding(int row, int col, int width, int height,
+            int widthPadding, int heightPadding, Color color, Particle &p);
 
 };
 
