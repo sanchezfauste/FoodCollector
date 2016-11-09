@@ -49,8 +49,9 @@ class Map {
     int numberOfAvailableFood;
     Direction currentPlayerDirection;
     Direction nextPlayerDirection;
+    set<Point> foodCells;
 
-    int getNumberOfAvailableFood();
+    void initializeAvailableFood();
     void eatFood(Point p, CellType player);
 
   public:
@@ -90,6 +91,7 @@ class Map {
     Direction getNextPlayerDirection();
     void setCurrentPlayerDirection(Direction d);
     void setNextPlayerDirection(Direction d);
+    list<Direction> getEnemyLegalMoves();
 
 };
 

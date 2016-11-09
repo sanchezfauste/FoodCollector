@@ -233,6 +233,7 @@ void Map::eatFood(Point p, CellType player) {
     if (cells[p.row][p.col] == Food) {
         cells[p.row][p.col] = Corridor;
         numberOfAvailableFood -= 1;
+        foodCells.erase(p);
         if (player == Player) {
             eatedFoodByPlayer += 1;
         } else if (player == Enemy) {
@@ -270,19 +271,23 @@ int Map::getEatedFoodByEnemy() {
 void Map::initGame() {
     setPlayerPosition(playerInitialPosition);
     setEnemyPosition(enemyInitialPosition);
-    numberOfAvailableFood = getNumberOfAvailableFood();
+    initializeAvailableFood();
     currentPlayerDirection = None;
     nextPlayerDirection = None;
 }
 
-int Map::getNumberOfAvailableFood() {
+void Map::initializeAvailableFood() {
     int availableFood = 0;
+    foodCells.clear();
     for (int row = 0; row < nRows; row += 1) {
         for (int col = 0; col < nCols; col += 1) {
-            if (cells[row][col] == Food) availableFood += 1;
+            if (cells[row][col] == Food) {
+                availableFood += 1;
+                foodCells.insert(Point(row, col));
+            }
         }
     }
-    return availableFood;
+    numberOfAvailableFood = availableFood;
 }
 
 Direction Map::getCurrentPlayerDirection() {
@@ -298,4 +303,13 @@ void Map::setCurrentPlayerDirection(Direction d) {
 }
 void Map::setNextPlayerDirection(Direction d) {
     nextPlayerDirection = d;
+}
+
+list<Direction> Map::getEnemyLegalMoves() {
+    list<Direction> legalMoves;
+    if (enemyCanMoveTo(Up)) legalMoves.push_back(Up);
+    if (enemyCanMoveTo(Down)) legalMoves.push_back(Down);
+    if (enemyCanMoveTo(Left)) legalMoves.push_back(Left);
+    if (enemyCanMoveTo(Right)) legalMoves.push_back(Right);
+    return legalMoves;
 }
