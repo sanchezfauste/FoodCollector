@@ -19,8 +19,15 @@ typedef struct Color {
     Color(const GLfloat red, const GLfloat green, const GLfloat blue);
 } Color;
 
+typedef struct Size {
+    const float width;
+    const float height;
+    Size(const float width, const float height);
+} Size;
+
 void display();
 void keyboard(unsigned char c, int x, int y);
+void keyboardSpecial(int key, int x, int y);
 void idle();
 
 class Graphic {
@@ -43,7 +50,8 @@ class Graphic {
     Graphic(Graphic const&);
     void operator=(Graphic const&);
     void playerMove(Direction d);
-    void printPlayer(int row, int col);
+    void printPlayer(int row, int col, Particle &particle, Color color);
+    void enemyMove(Direction d);
 
   public:
     static const int cellWidth;
@@ -59,12 +67,14 @@ class Graphic {
     static const long playerMovementTime;
 
     static Graphic& getInstance();
+    static Size getTranslation(Direction d);
     void setMap(Map& map);
     void setGlutDimensions(int width, int height);
     void glutInitialize(int *argcp, char **argv);
     void glutRun();
     void glutDisplay();
     void glutKeyboard(unsigned char key, int x, int y);
+    void glutKeyboardSpecial(int key, int x, int y);
     void glutIdle();
     int getScreenWidth();
     int getScreenHeight();

@@ -78,7 +78,9 @@ class Map {
     Point getPlayerPosition();
     Point getEnemyPosition();
     void playerMove(Direction d);
+    void enemyMove(Direction d);
     bool playerCanMoveTo(Direction d);
+    bool enemyCanMoveTo(Direction d);
     CellType getPointCellType(Point p);
     Point getNeighborPoint(Point p, Direction d);
     int getEatedFoodByPlayer();

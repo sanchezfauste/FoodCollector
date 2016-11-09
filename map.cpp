@@ -197,8 +197,35 @@ void Map::playerMove(Direction d) {
     }
 }
 
+void Map::enemyMove(Direction d) {
+    Point neighborPoint = getNeighborPoint(getEnemyPosition(), d);
+    CellType neighborCellType = getPointCellType(neighborPoint);
+    switch (neighborCellType) {
+        case Wall:
+            break;
+        case Food:
+            eatFood(neighborPoint, Enemy);
+        case Corridor:
+            setEnemyPosition(neighborPoint);
+            break;
+        case Player:
+            currentPlayerDirection = None;
+            nextPlayerDirection = None;
+            setEnemyPosition(neighborPoint);
+            setPlayerPosition(playerInitialPosition);
+            break;
+        default:
+            break;
+    }
+}
+
 bool Map::playerCanMoveTo(Direction d) {
     Point neighborPoint = getNeighborPoint(getPlayerPosition(), d);
+    return getPointCellType(neighborPoint) != Wall;
+}
+
+bool Map::enemyCanMoveTo(Direction d) {
+    Point neighborPoint = getNeighborPoint(getEnemyPosition(), d);
     return getPointCellType(neighborPoint) != Wall;
 }
 

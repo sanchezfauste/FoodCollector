@@ -33,6 +33,8 @@ const long Graphic::playerMovementTime = 200;
 Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue) :
         red(red), green(green), blue(blue) {}
 
+Size::Size(const float width, const float height) : width(width), height(height){}
+
 Graphic::Graphic() : playerParticle(Particle()), enemyParticle(Particle()) {}
 
 Graphic& Graphic::getInstance() {
@@ -73,6 +75,7 @@ void Graphic::glutInitialize(int *argcp, char **argv) {
 void Graphic::glutRun() {
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
+    glutSpecialFunc(keyboardSpecial);
     glutIdleFunc(idle);
     lastTime = 0;
     glutMainLoop();
@@ -97,32 +100,31 @@ void Graphic::glutDisplay() {
                             Graphic::cellHeight, Graphic::foodWidthPadding,
                             Graphic::foodHeightPadding, Graphic::foodColor);
                     break;
-                case Player:
-                    printPlayer(row, col);
-                    break;
-                case Enemy:
-                    Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
-                            Graphic::cellHeight, Graphic::playerWidthPadding,
-                            Graphic::playerHeightPadding, Graphic::enemyColor);
+                default:
                     break;
             }
         }
     }
+    Point playerPos = map->getPlayerPosition();
+    Point enemyPos = map->getEnemyPosition();
+    printPlayer(map->getNumberOfRows()-1-playerPos.row, playerPos.col,
+            playerParticle, Graphic::playerColor);
+    printPlayer(map->getNumberOfRows()-1-enemyPos.row, enemyPos.col,
+            enemyParticle, Graphic::enemyColor);
     glutSwapBuffers();
 }
 
-void Graphic::printPlayer(int row, int col) {
-    switch (playerParticle.getState()) {
+void Graphic::printPlayer(int row, int col, Particle &particle, Color color) {
+    switch (particle.getState()) {
         case Quiet:
             Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
                     Graphic::cellHeight, Graphic::playerWidthPadding,
-                    Graphic::playerHeightPadding, Graphic::playerColor);
+                    Graphic::playerHeightPadding, color);
             break;
         case Moving:
             Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
                     Graphic::cellHeight, Graphic::playerWidthPadding,
-                    Graphic::playerHeightPadding, Graphic::playerColor,
-                    playerParticle);
+                    Graphic::playerHeightPadding, color, particle);
             break;
     }
 }
@@ -149,34 +151,68 @@ void Graphic::glutKeyboard(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+void Graphic::glutKeyboardSpecial(int key, int x, int y) {
+    switch (key) {
+        case GLUT_KEY_UP:
+            playerMove(Up);
+            break;
+        case GLUT_KEY_DOWN:
+            playerMove(Down);
+            break;
+        case GLUT_KEY_LEFT:
+            playerMove(Left);
+            break;
+        case GLUT_KEY_RIGHT:
+            playerMove(Right);
+            break;
+        default:
+            break;
+    }
+}
+
 void Graphic::playerMove(Direction d) {
     if (playerParticle.getState() != Moving) {
         if (map->playerCanMoveTo(d)) {
             map->setCurrentPlayerDirection(d);
-            float widthTranslation = 0;
-            float heightTranslation = 0;
-            switch (d) {
-                case Up:
-                    heightTranslation = Graphic::cellHeight;
-                    break;
-                case Down:
-                    heightTranslation = - Graphic::cellHeight;
-                    break;
-                case Left:
-                    widthTranslation = - Graphic::cellWidth;
-                    break;
-                case Right:
-                    widthTranslation = Graphic::cellWidth;
-                    break;
-                default:
-                    break;
-            }
-            playerParticle.initMovement(widthTranslation, heightTranslation,
+            Size translation = Graphic::getTranslation(d);
+            playerParticle.initMovement(translation.width, translation.height,
                     Graphic::playerMovementTime, d);
         }
     } else {
         map->setNextPlayerDirection(d);
     }
+}
+
+void Graphic::enemyMove(Direction d) {
+    if (enemyParticle.getState() != Moving) {
+        if (map->enemyCanMoveTo(d)) {
+            Size translation = Graphic::getTranslation(d);
+            enemyParticle.initMovement(translation.width, translation.height,
+                    Graphic::playerMovementTime, d);
+        }
+    }
+}
+
+Size Graphic::getTranslation(Direction d) {
+    float widthTranslation = 0;
+    float heightTranslation = 0;
+    switch (d) {
+        case Up:
+            heightTranslation = Graphic::cellHeight;
+            break;
+        case Down:
+            heightTranslation = - Graphic::cellHeight;
+            break;
+        case Left:
+            widthTranslation = - Graphic::cellWidth;
+            break;
+        case Right:
+            widthTranslation = Graphic::cellWidth;
+            break;
+        default:
+            break;
+    }
+    return Size(widthTranslation, heightTranslation);
 }
 
 void display() {
@@ -185,6 +221,10 @@ void display() {
 
 void keyboard(unsigned char c, int x, int y) {
     Graphic::getInstance().glutKeyboard(c, x, y);
+}
+
+void keyboardSpecial(int key, int x, int y) {
+    Graphic::getInstance().glutKeyboardSpecial(key, x, y);
 }
 
 void idle() {
@@ -235,7 +275,9 @@ void Graphic::glutIdle() {
             }
         }
         if (enemyParticle.getState() == Moving) {
-            enemyParticle.integrate(elapsedTime);
+            if (enemyParticle.integrate(elapsedTime)) {
+                map->enemyMove(enemyParticle.getDirection());
+            }
         }
         lastTime = t;
     }
