@@ -9,6 +9,7 @@ Copyright (C) 2016 Marc Sanchez
 #include "map.h"
 #include "particle.h"
 #include <GL/glut.h>
+#include <string>
 
 using namespace std;
 
@@ -37,7 +38,9 @@ class Graphic {
     static const Color foodColor;
     static const Color playerColor;
     static const Color enemyColor;
+    static const Color textColor;
     static const char* const gameTitle;
+    static const Size scoreInfoPosition;
 
     Map* map;
     int width;
@@ -82,6 +85,8 @@ class Graphic {
             int widthPadding, int heightPadding, Color color);
     static void drawSquareWithPadding(int row, int col, int width, int height,
             int widthPadding, int heightPadding, Color color, Particle &p);
+    void printText(float width, float height, string str);
+    void printScore(float width, float height);
 
 };
 

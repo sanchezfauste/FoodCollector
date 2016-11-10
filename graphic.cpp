@@ -5,6 +5,7 @@ Copyright (C) 2016 Marc Sanchez
 
 #include "graphic.h"
 #include "mapgenerator.h"
+#include <sstream>
 
 using namespace std;
 
@@ -13,6 +14,8 @@ const Color Graphic::wallColor = Color(0.0, 0.2, 1.0);
 const Color Graphic::foodColor = Color(1.0, 0.64, 0);
 const Color Graphic::playerColor = Color(0.13, 0.54, 0.13);
 const Color Graphic::enemyColor = Color(0.7, 0.13, 0.13);
+const Color Graphic::textColor = Color(1.0, 1.0, 1.0);
+const Size Graphic::scoreInfoPosition = Size(7.5, 7.5);
 
 const char* const Graphic::gameTitle = "Food Collection Game - Tuita Team";
 
@@ -111,7 +114,25 @@ void Graphic::glutDisplay() {
             playerParticle, Graphic::playerColor);
     printPlayer(map->getNumberOfRows()-1-enemyPos.row, enemyPos.col,
             enemyParticle, Graphic::enemyColor);
+    printScore(Graphic::scoreInfoPosition.width, Graphic::scoreInfoPosition.height);
     glutSwapBuffers();
+}
+
+void Graphic::printText(float width, float height, string str) {
+    glColor3f(Graphic::textColor.red, Graphic::textColor.green,
+            Graphic::textColor.blue);
+    glRasterPos2f(width, height);
+    for (int i = 0; i < (int) str.size(); i++) {
+        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, str[i]);
+    }
+}
+
+void Graphic::printScore(float width, float height) {
+    ostringstream convert;
+    convert << "Player: " << map->getEatedFoodByPlayer() << " | Enemy: "
+            << map->getEatedFoodByEnemy();
+    printText(Graphic::scoreInfoPosition.width,
+            Graphic::scoreInfoPosition.height, convert.str());
 }
 
 void Graphic::printPlayer(int row, int col, Particle &particle, Color color) {
