@@ -8,6 +8,7 @@ Copyright (C) 2016 Marc Sanchez
 
 #include "map.h"
 #include "particle.h"
+#include "enemy_strategy.h"
 #include <GL/glut.h>
 #include <string>
 
@@ -48,6 +49,7 @@ class Graphic {
     Particle playerParticle;
     Particle enemyParticle;
     long lastTime;
+    EnemyStrategy *enemyStrategy;
 
     Graphic();
     Graphic(Graphic const&);

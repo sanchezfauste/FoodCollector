@@ -38,7 +38,8 @@ Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue) :
 
 Size::Size(const float width, const float height) : width(width), height(height){}
 
-Graphic::Graphic() : playerParticle(Particle()), enemyParticle(Particle()) {}
+Graphic::Graphic() : playerParticle(Particle()), enemyParticle(Particle()),
+        enemyStrategy(NULL){}
 
 Graphic& Graphic::getInstance() {
     static Graphic instance;
@@ -49,7 +50,9 @@ void Graphic::setMap(Map& map) {
     if (this->map) {
         delete(this->map);
     }
+    if (enemyStrategy == NULL) delete(enemyStrategy);
     this->map = new Map(map);
+    enemyStrategy = new EnemyStrategy(this->map);
 }
 
 int Graphic::getScreenWidth() {
@@ -298,6 +301,13 @@ void Graphic::glutIdle() {
         if (enemyParticle.getState() == Moving) {
             if (enemyParticle.integrate(elapsedTime)) {
                 map->enemyMove(enemyParticle.getDirection());
+            }
+        } else {
+            Direction d = enemyStrategy->getAction();
+            if (map->enemyCanMoveTo(d)) {
+                Size translation = Graphic::getTranslation(d);
+                enemyParticle.initMovement(translation.width,
+                        translation.height, Graphic::playerMovementTime, d);
             }
         }
         lastTime = t;
