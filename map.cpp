@@ -168,11 +168,11 @@ void Map::setEnemyPosition(Point p) {
     enemyPosition = new Point(p);
 }
 
-Point Map::getPlayerPosition() {
+Point Map::getPlayerPosition() const {
     return Point(playerPosition->row, playerPosition->col);
 }
 
-Point Map::getEnemyPosition() {
+Point Map::getEnemyPosition() const {
     return Point(enemyPosition->row, enemyPosition->col);
 }
 
@@ -312,4 +312,52 @@ list<Direction> Map::getEnemyLegalMoves() {
     if (enemyCanMoveTo(Left)) legalMoves.push_back(Left);
     if (enemyCanMoveTo(Right)) legalMoves.push_back(Right);
     return legalMoves;
+}
+
+list<Direction> Map::getPlayerLegalMoves() {
+    list<Direction> legalMoves;
+    if (playerCanMoveTo(Up)) legalMoves.push_back(Up);
+    if (playerCanMoveTo(Down)) legalMoves.push_back(Down);
+    if (playerCanMoveTo(Left)) legalMoves.push_back(Left);
+    if (playerCanMoveTo(Right)) legalMoves.push_back(Right);
+    return legalMoves;
+}
+
+list<Direction> Map::getLegalMoves(CellType agent) {
+    if (agent == Enemy) return getEnemyLegalMoves();
+    else return getPlayerLegalMoves();
+}
+
+bool Map::isFoodAvailable() {
+    return numberOfAvailableFood == 0;
+}
+
+Map Map::generateSuccessor(CellType agent, Direction action) {
+    Map successor = Map(*this);
+    if (agent == Player) {
+        successor.playerMove(action);
+    } else if (agent == Enemy) {
+        successor.enemyMove(action);
+    }
+    return successor;
+}
+
+Map::Map(const Map &m) : nRows(m.nRows), nCols(m.nCols),
+        eatedFoodByPlayer(m.eatedFoodByPlayer),
+        eatedFoodByEnemy(m.eatedFoodByEnemy),
+        playerInitialPosition(m.playerInitialPosition),
+        enemyInitialPosition(m.enemyInitialPosition) {
+    cells.assign(nRows, vector<CellType>(nCols, Wall));
+    for (int i = 0; i < nRows; i += 1) {
+        for (int j = 0; j < nCols; j += 1) {
+            cells[i][j] = m.cells[i][j];
+        }
+    }
+    playerPosition = new Point(m.getPlayerPosition());
+    enemyPosition = new Point(m.getEnemyPosition());
+    initGame();
+}
+
+set<Point> Map::getFoodCells() {
+    return foodCells;
 }

@@ -53,6 +53,8 @@ class Map {
 
     void initializeAvailableFood();
     void eatFood(Point p, CellType player);
+    list<Direction> getEnemyLegalMoves();
+    list<Direction> getPlayerLegalMoves();
 
   public:
     static const int minRows;
@@ -61,6 +63,7 @@ class Map {
     Map(const int nRows, const int nCols);
     Map(const int nRows, const int nCols, const Point playerInitialPosition,
             const Point enemyInitialPosition);
+    Map(const Map &m);
     void print();
     void copySymmetricLeftToRight();
     int getNumberOfRows();
@@ -76,8 +79,8 @@ class Map {
     vector<CellType> getRow(int row);
     void setPlayerPosition(Point p);
     void setEnemyPosition(Point p);
-    Point getPlayerPosition();
-    Point getEnemyPosition();
+    Point getPlayerPosition() const;
+    Point getEnemyPosition() const;
     void playerMove(Direction d);
     void enemyMove(Direction d);
     bool playerCanMoveTo(Direction d);
@@ -91,7 +94,10 @@ class Map {
     Direction getNextPlayerDirection();
     void setCurrentPlayerDirection(Direction d);
     void setNextPlayerDirection(Direction d);
-    list<Direction> getEnemyLegalMoves();
+    list<Direction> getLegalMoves(CellType agent);
+    bool isFoodAvailable();
+    Map generateSuccessor(CellType agent, Direction action);
+    set<Point> getFoodCells();
 
 };
 
