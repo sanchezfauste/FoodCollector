@@ -7,7 +7,9 @@ Copyright (C) 2016 Marc Sanchez
 #include <stdlib.h>
 #include <ctime>
 
-EnemyStrategy::EnemyStrategy(Map *map) : map(map) {}
+EnemyStrategy::EnemyStrategy(Map *map) : map(map) {
+    srand(time(NULL));
+}
 
 Direction EnemyStrategy::getAction() {
     return minimax_decision(2);
@@ -25,7 +27,7 @@ Map EnemyStrategy::result(Map &map, CellType agent, Direction action) {
     return map.generateSuccessor(agent, action);
 }
 
-double EnemyStrategy::max_value(Map &map, CellType agent, int depth) {
+double EnemyStrategy::max_value(Map map, CellType agent, int depth) {
     if (terminalTest(map, depth)) {
         return utility(map);
     }
@@ -42,15 +44,15 @@ double EnemyStrategy::min_value(Map map, CellType agent, int depth) {
         return utility(map);
     }
     list<Direction> legalMoves = map.getLegalMoves(agent);
-    double v = +30000000;
+    double v = 0;
     for (list<Direction>::iterator a = legalMoves.begin(); a != legalMoves.end(); ++a) {
         if (agent == Player) {
-            v = min(v, min_value(result(map, agent, *a), Enemy, depth-1));
+            v += max_value(result(map, agent, *a), Enemy, depth-1);
         } else {
-            v = min(v, min_value(result(map, agent, *a), Player, depth));
+            v += min_value(result(map, agent, *a), Player, depth);
         }
     }
-    return v;
+    return v/legalMoves.size();
 }
 
 Direction EnemyStrategy::minimax_decision(int depth) {
@@ -97,7 +99,6 @@ double EnemyStrategy::abs(double v1) {
 }
 
 Direction EnemyStrategy::getRandomDirection(list<Direction> directions) {
-    srand(time(NULL));
     list<Direction>::iterator n = directions.begin();
     for (int i = 0, nrand = random() % directions.size(); i < nrand; i += 1, ++n) {}
     return *n;

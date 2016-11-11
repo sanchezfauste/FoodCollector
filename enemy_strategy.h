@@ -17,7 +17,7 @@ class EnemyStrategy {
     double utility(Map &map);
     bool terminalTest(Map &map, int depth);
     Map result(Map &map, CellType agent, Direction action);
-    double max_value(Map &map, CellType agent, int depth);
+    double max_value(Map map, CellType agent, int depth);
     double min_value(Map map, CellType agent, int depth);
     Direction minimax_decision(int depth);
     double evaluationFunction(Map &map);
