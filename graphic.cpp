@@ -196,7 +196,7 @@ void Graphic::glutKeyboardSpecial(int key, int x, int y) {
 
 void Graphic::playerMove(Direction d) {
     if (playerParticle.getState() != Moving) {
-        if (map->playerCanMoveTo(d)) {
+        if (map->playerCanMoveTo(d) && d != None) {
             map->setCurrentPlayerDirection(d);
             Size translation = Graphic::getTranslation(d);
             playerParticle.initMovement(translation.width, translation.height,
@@ -209,7 +209,7 @@ void Graphic::playerMove(Direction d) {
 
 void Graphic::enemyMove(Direction d) {
     if (enemyParticle.getState() != Moving) {
-        if (map->enemyCanMoveTo(d)) {
+        if (map->enemyCanMoveTo(d) && d != None) {
             Size translation = Graphic::getTranslation(d);
             enemyParticle.initMovement(translation.width, translation.height,
                     Graphic::playerMovementTime, d);
