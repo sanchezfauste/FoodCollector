@@ -355,7 +355,9 @@ Map::Map(const Map &m) : nRows(m.nRows), nCols(m.nCols),
     }
     playerPosition = new Point(m.getPlayerPosition());
     enemyPosition = new Point(m.getEnemyPosition());
-    initGame();
+    initializeAvailableFood();
+    currentPlayerDirection = None;
+    nextPlayerDirection = None;
 }
 
 set<Point> Map::getFoodCells() {
