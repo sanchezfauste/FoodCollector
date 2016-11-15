@@ -329,7 +329,7 @@ list<Direction> Map::getLegalMoves(CellType agent) {
 }
 
 bool Map::isFoodAvailable() {
-    return numberOfAvailableFood == 0;
+    return numberOfAvailableFood > 0;
 }
 
 Map Map::generateSuccessor(CellType agent, Direction action) {
