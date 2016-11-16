@@ -73,16 +73,13 @@ Direction EnemyStrategy::minimax_decision(int depth) {
 }
 
 double EnemyStrategy::evaluationFunction(Map &map) {
-    double totalScore = map.getEatedFoodByEnemy() * 100;
+    double totalScore = map.getEatedFoodByEnemy() * 10;
     Point enemyPosition = map.getEnemyPosition();
     set<Point> foodCells = map.getFoodCells();
     for (set<Point>::iterator a = foodCells.begin(); a != foodCells.end(); ++a) {
         double d = minDistance(*a, enemyPosition);
-        totalScore += (d == 0) ? 100 : 1.0/(d*d);
+        totalScore += 1.0/(d*d);
     }
-    Point playerPosition = map.getPlayerPosition();
-    double d = minDistance(enemyPosition, playerPosition);
-    totalScore += (d <= 1) ? 300 : 0;
     return totalScore;
 }
 
