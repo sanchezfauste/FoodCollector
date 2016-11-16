@@ -34,10 +34,13 @@ void MapGenerator::generate() {
     stk.push(*current);
     visited.insert(*current);
 
-    while(!map.allCellsVisited(visited) && !stk.empty()) {
+    while(!stk.empty()) {
         list<Point> unvisitedNeighbors = map.getUnvisitedNeighbors(*current, visited);
         if (unvisitedNeighbors.empty()) {
             current = new Point(stk.top());
+            list<Point> neighbors = map.getNeighbors(*current);
+            Point p = map.getRandomPointOfList(neighbors);
+            map.removeWall(*current, p);
             stk.pop();
         } else {
             Point *neighbor = new Point(map.getRandomPointOfList(unvisitedNeighbors));
