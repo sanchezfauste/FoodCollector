@@ -31,7 +31,7 @@ const int Graphic::playerWidthPadding =
         (Graphic::cellWidth - Graphic::playerWidth) / 2;
 const int Graphic::playerHeightPadding =
         (Graphic::cellHeight - Graphic::playerHeight) / 2;
-const long Graphic::playerMovementTime = 200;
+const long Graphic::playerMovementTime = 150;
 
 Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue) :
         red(red), green(green), blue(blue) {}
