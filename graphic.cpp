@@ -302,7 +302,7 @@ void Graphic::glutIdle() {
             if (enemyParticle.integrate(elapsedTime)) {
                 map->enemyMove(enemyParticle.getDirection());
             }
-        } else {
+        } else if (map->isFoodAvailable()) {
             Direction d = enemyStrategy->getAction();
             if (map->enemyCanMoveTo(d)) {
                 Size translation = Graphic::getTranslation(d);
