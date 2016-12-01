@@ -271,8 +271,8 @@ void Graphic::drawWall(int row, int col) {
     glVertex3i(x + x1, y - y1, z1);
     glEnd();
 
-    glColor3f(Graphic::wallColor.red, Graphic::wallColor.green,
-        Graphic::wallColor.blue);
+    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
+        Graphic::wallSideColor.blue);
     glBegin(GL_QUADS);
     glVertex3i(x + x1, y + y1, z1 - 1);
     glVertex3i(x - x1, y + y1, z1 - 1);
