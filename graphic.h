@@ -36,20 +36,26 @@ class Graphic {
 
     static const Color backgroundColor;
     static const Color wallColor;
+    static const Color wallSideColor;
     static const Color foodColor;
     static const Color playerColor;
     static const Color enemyColor;
     static const Color textColor;
     static const char* const gameTitle;
     static const Size scoreInfoPosition;
+    static const double glutRatio;
 
     Map* map;
     int width;
     int height;
+    int glutWidth;
+    int glutHeight;
     Particle playerParticle;
     Particle enemyParticle;
     long lastTime;
     EnemyStrategy *enemyStrategy;
+    int angleAlpha;
+    int angleBeta;
 
     Graphic();
     Graphic(Graphic const&);
@@ -61,14 +67,10 @@ class Graphic {
   public:
     static const int cellWidth;
     static const int cellHeight;
-    static const int foodWidth;
-    static const int foodHeight;
-    static const int foodWidthPadding;
-    static const int foodHeightPadding;
-    static const int playerWidth;
-    static const int playerHeight;
-    static const int playerWidthPadding;
-    static const int playerHeightPadding;
+    static const int cellDepth;
+    static const int foodRadius;
+    static const GLint sphereSlices;
+    static const GLint sphereStacks;
     static const long playerMovementTime;
 
     static Graphic& getInstance();
@@ -83,12 +85,13 @@ class Graphic {
     void glutIdle();
     int getScreenWidth();
     int getScreenHeight();
-    static void drawSquareWithPadding(int row, int col, int width, int height,
-            int widthPadding, int heightPadding, Color color);
-    static void drawSquareWithPadding(int row, int col, int width, int height,
-            int widthPadding, int heightPadding, Color color, Particle &p);
+    void drawWall(int row, int col);
+    void drawFood(int row, int col);
+    void drawTank(int row, int col, Particle &p, Color color);
     void printText(float width, float height, string str);
     void printScore(float width, float height);
+    void initDisplay();
+    void positionObserver(float alpha, float beta, int radius);
 
 };
 

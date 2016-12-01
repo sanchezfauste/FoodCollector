@@ -6,31 +6,28 @@ Copyright (C) 2016 Marc Sanchez
 #include "graphic.h"
 #include "mapgenerator.h"
 #include <sstream>
+#include <math.h>
 
 using namespace std;
 
 const Color Graphic::backgroundColor = Color(0.0, 0.0, 0.0);
-const Color Graphic::wallColor = Color(0.0, 0.2, 1.0);
+const Color Graphic::wallColor = Color(0.0, 0.70, 0.3);
+const Color Graphic::wallSideColor = Color(0.0, 0.35, 0.15);
 const Color Graphic::foodColor = Color(1.0, 0.64, 0);
 const Color Graphic::playerColor = Color(0.13, 0.54, 0.13);
 const Color Graphic::enemyColor = Color(0.7, 0.13, 0.13);
 const Color Graphic::textColor = Color(1.0, 1.0, 1.0);
 const Size Graphic::scoreInfoPosition = Size(7.5, 7.5);
+const double Graphic::glutRatio = 1.1;
 
 const char* const Graphic::gameTitle = "Food Collection Game - Tuita Team";
 
 const int Graphic::cellWidth = 30;
 const int Graphic::cellHeight = 30;
-const int Graphic::foodWidth = 6;
-const int Graphic::foodHeight = 6;
-const int Graphic::foodWidthPadding = (Graphic::cellWidth - Graphic::foodWidth) / 2;
-const int Graphic::foodHeightPadding = (Graphic::cellHeight - Graphic::foodHeight) / 2;
-const int Graphic::playerWidth = 10;
-const int Graphic::playerHeight = 10;
-const int Graphic::playerWidthPadding =
-        (Graphic::cellWidth - Graphic::playerWidth) / 2;
-const int Graphic::playerHeightPadding =
-        (Graphic::cellHeight - Graphic::playerHeight) / 2;
+const int Graphic::cellDepth = 8;
+const int Graphic::foodRadius = 5;
+const GLint Graphic::sphereSlices = 10;
+const GLint Graphic::sphereStacks = 10;
 const long Graphic::playerMovementTime = 150;
 
 Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue) :
@@ -39,7 +36,7 @@ Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue) :
 Size::Size(const float width, const float height) : width(width), height(height){}
 
 Graphic::Graphic() : playerParticle(Particle()), enemyParticle(Particle()),
-        enemyStrategy(NULL){}
+        enemyStrategy(NULL), angleAlpha(270), angleBeta(60){}
 
 Graphic& Graphic::getInstance() {
     static Graphic instance;
@@ -66,16 +63,19 @@ int Graphic::getScreenHeight() {
 void Graphic::setGlutDimensions(int width, int height) {
     this->width = width;
     this->height = height;
+    glutWidth = (width-1)*Graphic::glutRatio;
+    glutHeight = (height-1)*Graphic::glutRatio;
     glutInitWindowPosition(0, 0);
     glutInitWindowSize(width, height);
     glutCreateWindow(Graphic::gameTitle);
     glMatrixMode(GL_PROJECTION);
-    gluOrtho2D(0, width-1, 0, height-1);
+    glEnable(GL_DEPTH_TEST);
+    glOrtho(-glutWidth/2, glutWidth/2, -glutHeight/2, glutHeight/2, 10, 2000);
 }
 
 void Graphic::glutInitialize(int *argcp, char **argv) {
     glutInit(argcp, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 }
 
 void Graphic::glutRun() {
@@ -88,23 +88,18 @@ void Graphic::glutRun() {
 }
 
 void Graphic::glutDisplay() {
-    glClearColor(Graphic::backgroundColor.red, Graphic::backgroundColor.green,
-            Graphic::backgroundColor.blue, 0.0);
-    glClear(GL_COLOR_BUFFER_BIT);
+    initDisplay();
     for (int row = 0; row < map->getNumberOfRows(); row += 1) {
         vector<CellType> rowCells = map->getRow(map->getNumberOfRows()-1-row);
         for (int col = 0; col < map->getNumberOfCols(); col += 1) {
             switch (rowCells[col]) {
                 case Wall:
-                    Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
-                            Graphic::cellHeight, 0, 0, Graphic::wallColor);
+                    drawWall(row, col);
                     break;
                 case Corridor:
                     break;
                 case Food:
-                    Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
-                            Graphic::cellHeight, Graphic::foodWidthPadding,
-                            Graphic::foodHeightPadding, Graphic::foodColor);
+                    Graphic::drawFood(row, col);
                     break;
                 default:
                     break;
@@ -122,35 +117,27 @@ void Graphic::glutDisplay() {
 }
 
 void Graphic::printText(float width, float height, string str) {
+    glPushMatrix();
+    glTranslatef(width, height, Graphic::cellDepth * 2);
     glColor3f(Graphic::textColor.red, Graphic::textColor.green,
             Graphic::textColor.blue);
-    glRasterPos2f(width, height);
+    double scale = (double) Graphic::cellWidth/3 / glutStrokeWidth(GLUT_STROKE_ROMAN, 'A');
+    glScalef(scale, scale, 0);
     for (int i = 0; i < (int) str.size(); i++) {
-        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, str[i]);
+        glutStrokeCharacter(GLUT_STROKE_ROMAN, str[i]);
     }
+    glPopMatrix();
 }
 
 void Graphic::printScore(float width, float height) {
     ostringstream convert;
     convert << "Player: " << map->getEatedFoodByPlayer() << " | Enemy: "
             << map->getEatedFoodByEnemy();
-    printText(Graphic::scoreInfoPosition.width,
-            Graphic::scoreInfoPosition.height, convert.str());
+    printText(-this->width/2 + width, -this->height/2 + height, convert.str());
 }
 
 void Graphic::printPlayer(int row, int col, Particle &particle, Color color) {
-    switch (particle.getState()) {
-        case Quiet:
-            Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
-                    Graphic::cellHeight, Graphic::playerWidthPadding,
-                    Graphic::playerHeightPadding, color);
-            break;
-        case Moving:
-            Graphic::drawSquareWithPadding(row, col, Graphic::cellWidth,
-                    Graphic::cellHeight, Graphic::playerWidthPadding,
-                    Graphic::playerHeightPadding, color, particle);
-            break;
-    }
+    drawTank(row, col, particle, color);
 }
 
 void Graphic::glutKeyboard(unsigned char key, int x, int y) {
@@ -166,6 +153,18 @@ void Graphic::glutKeyboard(unsigned char key, int x, int y) {
             break;
         case 'd':
             playerMove(Right);
+            break;
+        case 'i':
+            if (angleBeta <= (90 - 4)) angleBeta += 3;
+            break;
+        case 'k':
+            if (angleBeta >= (-90 + 4)) angleBeta -= 3;
+            break;
+        case 'j':
+            angleAlpha = (angleAlpha + 3) % 360;
+            break;
+        case 'l':
+            angleAlpha = (angleAlpha - 3 + 360) % 360;
             break;
         default:
             Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
@@ -255,28 +254,96 @@ void idle() {
     Graphic::getInstance().glutIdle();
 }
 
-void Graphic::drawSquareWithPadding(int row, int col, int width, int height,
-            int widthPadding, int heightPadding, Color color) {
-    glColor3f(color.red, color.green, color.blue);
+void Graphic::drawWall(int row, int col) {
+    int x = (col + 0.5) * Graphic::cellWidth - this->width/2;
+    int y = (row + 0.5) * Graphic::cellHeight - this->height/2;
+    int z = Graphic::cellDepth;
+    int x1 = Graphic::cellWidth/2;
+    int y1 = Graphic::cellHeight/2;
+    int z1 = z/2;
+
+    glColor3f(Graphic::wallColor.red, Graphic::wallColor.green, Graphic::wallColor.blue);
     glBegin(GL_QUADS);
-    glVertex2i(col*width + widthPadding, row*height + heightPadding);
-    glVertex2i(col*width + widthPadding, (row+1)*height - heightPadding);
-    glVertex2i((col+1)*width - widthPadding, (row+1)*height - heightPadding);
-    glVertex2i((col+1)*width - widthPadding, row*height + heightPadding);
+    glVertex3i(x + x1, y + y1, z + z1);
+    glVertex3i(x - x1, y + y1, z + z1);
+    glVertex3i(x - x1, y - y1, z + z1);
+    glVertex3i(x + x1, y - y1, z + z1);
+    glEnd();
+
+    glColor3f(Graphic::wallColor.red, Graphic::wallColor.green, Graphic::wallColor.blue);
+    glBegin(GL_QUADS);
+    glVertex3i(x + x1, y - y1, z - z1);
+    glVertex3i(x - x1, y - y1, z - z1);
+    glVertex3i(x - x1, y + y1, z - z1);
+    glVertex3i(x + x1, y + y1, z - z1);
+    glEnd();
+
+    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
+        Graphic::wallSideColor.blue);
+    glBegin(GL_QUADS);
+    glVertex3i(x + x1, y - y1, z + z1 -1);
+    glVertex3i(x + x1, y - y1, z - z1 + 1);
+    glVertex3i(x + x1, y + y1, z - z1 + 1);
+    glVertex3i(x + x1, y + y1, z + z1 - 1);
+    glEnd();
+
+    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
+        Graphic::wallSideColor.blue);
+    glBegin(GL_QUADS);
+    glVertex3i(x - x1, y + y1, z + z1 - 1);
+    glVertex3i(x - x1, y + y1, z - z1 + 1);
+    glVertex3i(x - x1, y - y1, z - z1 + 1);
+    glVertex3i(x - x1, y - y1, z + z1 - 1);
+    glEnd();
+
+    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
+        Graphic::wallSideColor.blue);
+    glBegin(GL_QUADS);
+    glVertex3i(x - x1, y + y1, z - z1 + 1);
+    glVertex3i(x - x1, y + y1, z + z1 - 1);
+    glVertex3i(x + x1, y + y1, z + z1 - 1);
+    glVertex3i(x + x1, y + y1, z - z1 + 1);
+    glEnd();
+
+    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
+        Graphic::wallSideColor.blue);
+    glBegin(GL_QUADS);
+    glVertex3i(x + x1, y - y1, z - z1 + 1);
+    glVertex3i(x + x1, y - y1, z + z1 - 1);
+    glVertex3i(x - x1, y - y1, z + z1 - 1);
+    glVertex3i(x - x1, y - y1, z - z1 + 1);
     glEnd();
 }
 
-void Graphic::drawSquareWithPadding(int row, int col, int width, int height,
-        int widthPadding, int heightPadding, Color color, Particle &p) {
-    long widthTranslation = p.getCurrentWidthTranslation();
-    long heightTranslation = p.getCurrentHeightTranslation();
-    glColor3f(color.red, color.green, color.blue);
-    glBegin(GL_QUADS);
-    glVertex2i(col*width + widthPadding + widthTranslation, row*height + heightPadding + heightTranslation);
-    glVertex2i(col*width + widthPadding + widthTranslation, (row+1)*height - heightPadding + heightTranslation);
-    glVertex2i((col+1)*width - widthPadding + widthTranslation, (row+1)*height - heightPadding + heightTranslation);
-    glVertex2i((col+1)*width - widthPadding + widthTranslation, row*height + heightPadding + heightTranslation);
-    glEnd();
+void Graphic::drawFood(int row, int col) {
+    int x = (col + 0.5) * Graphic::cellWidth - this->width/2;
+    int y = (row + 0.5) * Graphic::cellHeight - this->height/2;
+    int z = Graphic::cellDepth;
+    glPushMatrix();
+        glTranslatef(x, y, z);
+        glColor3f(Graphic::foodColor.red, Graphic::foodColor.green,
+            Graphic::foodColor.blue);
+        glutSolidSphere(Graphic::foodRadius, Graphic::sphereSlices,
+            Graphic::sphereStacks);
+    glPopMatrix ();
+}
+
+void Graphic::drawTank(int row, int col, Particle &p, Color color) {
+    long widthTranslation = 0;
+    long heightTranslation = 0;
+    if (p.getState() != Quiet) {
+        widthTranslation = p.getCurrentWidthTranslation();
+        heightTranslation = p.getCurrentHeightTranslation();
+    }
+    int x = (col + 0.5) * Graphic::cellWidth - this->width/2 + widthTranslation;
+    int y = (row + 0.5) * Graphic::cellHeight - this->height/2 + heightTranslation;
+    int z = Graphic::cellDepth;
+    glPushMatrix();
+        glTranslatef(x, y, z);
+        glColor3f(color.red, color.green, color.blue);
+        glutSolidSphere(Graphic::foodRadius, Graphic::sphereSlices,
+            Graphic::sphereStacks);
+    glPopMatrix ();
 }
 
 void Graphic::glutIdle() {
@@ -313,4 +380,47 @@ void Graphic::glutIdle() {
         lastTime = t;
     }
     glutPostRedisplay();
+}
+
+void Graphic::initDisplay() {
+    glClearColor(Graphic::backgroundColor.red, Graphic::backgroundColor.green,
+            Graphic::backgroundColor.blue, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    positionObserver(angleAlpha, angleBeta, 450);
+    glPolygonMode(GL_FRONT, GL_FILL);
+    glPolygonMode(GL_BACK, GL_LINE);
+}
+
+void Graphic::positionObserver(float alpha, float beta, int radius) {
+    float x, y, z;
+    float upx, upy, upz;
+    float modul;
+
+    x = (float) radius * cos(alpha*2*M_PI/360.0) * cos(beta*2*M_PI/360.0);
+    y = (float) radius * sin(alpha*2*M_PI/360.0) * cos(beta*2*M_PI/360.0);
+    z = (float) radius * sin(beta*2*M_PI/360.0);
+
+    if (beta > 0) {
+        upx = -x;
+        upy = -y;
+        upz = (x*x + y*y) / z;
+    } else if (beta == 0) {
+        upx=0;
+        upy=0;
+        upz=1;
+    } else {
+        upx = x;
+        upy = y;
+        upz = -(x*x + y*y) / z;
+    }
+
+    modul = sqrt(upx*upx + upy*upy + upz*upz);
+
+    upx = upx/modul;
+    upy = upy/modul;
+    upz = upz/modul;
+
+    gluLookAt(x, y, z, 0.0, 0.0, 0.0, upx, upy, upz);
 }
