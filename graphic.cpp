@@ -118,7 +118,7 @@ void Graphic::glutDisplay() {
 
 void Graphic::printText(float width, float height, string str) {
     glPushMatrix();
-    glTranslatef(width, height, Graphic::cellDepth * 2);
+    glTranslatef(width, height, Graphic::cellDepth/2 + 1);
     glColor3f(Graphic::textColor.red, Graphic::textColor.green,
             Graphic::textColor.blue);
     double scale = (double) Graphic::cellWidth/3 / glutStrokeWidth(GLUT_STROKE_ROMAN, 'A');
@@ -262,65 +262,75 @@ void Graphic::drawWall(int row, int col) {
     int y1 = Graphic::cellHeight/2;
     int z1 = z/2;
 
-    glColor3f(Graphic::wallColor.red, Graphic::wallColor.green, Graphic::wallColor.blue);
+    glColor3f(Graphic::wallColor.red, Graphic::wallColor.green,
+        Graphic::wallColor.blue);
     glBegin(GL_QUADS);
-    glVertex3i(x + x1, y + y1, z + z1);
-    glVertex3i(x - x1, y + y1, z + z1);
-    glVertex3i(x - x1, y - y1, z + z1);
-    glVertex3i(x + x1, y - y1, z + z1);
+    glVertex3i(x + x1, y + y1, z1);
+    glVertex3i(x - x1, y + y1, z1);
+    glVertex3i(x - x1, y - y1, z1);
+    glVertex3i(x + x1, y - y1, z1);
     glEnd();
 
-    glColor3f(Graphic::wallColor.red, Graphic::wallColor.green, Graphic::wallColor.blue);
+    glColor3f(Graphic::wallColor.red, Graphic::wallColor.green,
+        Graphic::wallColor.blue);
     glBegin(GL_QUADS);
-    glVertex3i(x + x1, y - y1, z - z1);
-    glVertex3i(x - x1, y - y1, z - z1);
-    glVertex3i(x - x1, y + y1, z - z1);
-    glVertex3i(x + x1, y + y1, z - z1);
-    glEnd();
-
-    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
-        Graphic::wallSideColor.blue);
-    glBegin(GL_QUADS);
-    glVertex3i(x + x1, y - y1, z + z1 -1);
-    glVertex3i(x + x1, y - y1, z - z1 + 1);
-    glVertex3i(x + x1, y + y1, z - z1 + 1);
-    glVertex3i(x + x1, y + y1, z + z1 - 1);
+    glVertex3i(x + x1, y + y1, z1 - 1);
+    glVertex3i(x - x1, y + y1, z1 - 1);
+    glVertex3i(x - x1, y - y1, z1 - 1);
+    glVertex3i(x + x1, y - y1, z1 - 1);
     glEnd();
 
     glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
         Graphic::wallSideColor.blue);
     glBegin(GL_QUADS);
-    glVertex3i(x - x1, y + y1, z + z1 - 1);
-    glVertex3i(x - x1, y + y1, z - z1 + 1);
-    glVertex3i(x - x1, y - y1, z - z1 + 1);
-    glVertex3i(x - x1, y - y1, z + z1 - 1);
+    glVertex3i(x + x1, y - y1, -z1);
+    glVertex3i(x - x1, y - y1, -z1);
+    glVertex3i(x - x1, y + y1, -z1);
+    glVertex3i(x + x1, y + y1, -z1);
     glEnd();
 
     glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
         Graphic::wallSideColor.blue);
     glBegin(GL_QUADS);
-    glVertex3i(x - x1, y + y1, z - z1 + 1);
-    glVertex3i(x - x1, y + y1, z + z1 - 1);
-    glVertex3i(x + x1, y + y1, z + z1 - 1);
-    glVertex3i(x + x1, y + y1, z - z1 + 1);
+    glVertex3i(x + x1, y - y1, z1 - 1);
+    glVertex3i(x + x1, y - y1, -z1);
+    glVertex3i(x + x1, y + y1, -z1);
+    glVertex3i(x + x1, y + y1, z1 - 1);
     glEnd();
 
     glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
         Graphic::wallSideColor.blue);
     glBegin(GL_QUADS);
-    glVertex3i(x + x1, y - y1, z - z1 + 1);
-    glVertex3i(x + x1, y - y1, z + z1 - 1);
-    glVertex3i(x - x1, y - y1, z + z1 - 1);
-    glVertex3i(x - x1, y - y1, z - z1 + 1);
+    glVertex3i(x - x1, y + y1, z1 - 1);
+    glVertex3i(x - x1, y + y1, -z1);
+    glVertex3i(x - x1, y - y1, -z1);
+    glVertex3i(x - x1, y - y1, z1 - 1);
+    glEnd();
+
+    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
+        Graphic::wallSideColor.blue);
+    glBegin(GL_QUADS);
+    glVertex3i(x - x1, y + y1, -z1);
+    glVertex3i(x - x1, y + y1, z1 - 1);
+    glVertex3i(x + x1, y + y1, z1 - 1);
+    glVertex3i(x + x1, y + y1, -z1);
+    glEnd();
+
+    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
+        Graphic::wallSideColor.blue);
+    glBegin(GL_QUADS);
+    glVertex3i(x + x1, y - y1, -z1);
+    glVertex3i(x + x1, y - y1, z1 - 1);
+    glVertex3i(x - x1, y - y1, z1 - 1);
+    glVertex3i(x - x1, y - y1, -z1);
     glEnd();
 }
 
 void Graphic::drawFood(int row, int col) {
     int x = (col + 0.5) * Graphic::cellWidth - this->width/2;
     int y = (row + 0.5) * Graphic::cellHeight - this->height/2;
-    int z = Graphic::cellDepth;
     glPushMatrix();
-        glTranslatef(x, y, z);
+        glTranslatef(x, y, 0);
         glColor3f(Graphic::foodColor.red, Graphic::foodColor.green,
             Graphic::foodColor.blue);
         glutSolidSphere(Graphic::foodRadius, Graphic::sphereSlices,
@@ -337,9 +347,8 @@ void Graphic::drawTank(int row, int col, Particle &p, Color color) {
     }
     int x = (col + 0.5) * Graphic::cellWidth - this->width/2 + widthTranslation;
     int y = (row + 0.5) * Graphic::cellHeight - this->height/2 + heightTranslation;
-    int z = Graphic::cellDepth;
     glPushMatrix();
-        glTranslatef(x, y, z);
+        glTranslatef(x, y, 0);
         glColor3f(color.red, color.green, color.blue);
         glutSolidSphere(Graphic::foodRadius, Graphic::sphereSlices,
             Graphic::sphereStacks);
