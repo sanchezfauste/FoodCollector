@@ -50,6 +50,8 @@ void Graphic::setMap(Map& map) {
     if (enemyStrategy == NULL) delete(enemyStrategy);
     this->map = new Map(map);
     enemyStrategy = new EnemyStrategy(this->map);
+    playerParticle.setState(Quiet);
+    enemyParticle.setState(Quiet);
 }
 
 int Graphic::getScreenWidth() {
