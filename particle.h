@@ -35,6 +35,7 @@ class Particle {
     float getCurrentWidthTranslation();
     float getCurrentHeightTranslation();
     State getState();
+    void setState(State state);
     Direction getDirection();
 
 };
