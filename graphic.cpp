@@ -111,8 +111,8 @@ void Graphic::glutDisplay() {
             }
         }
     }
-    Point playerPos = map->getPlayerPosition();
-    Point enemyPos = map->getEnemyPosition();
+    Position playerPos = map->getPlayerPosition();
+    Position enemyPos = map->getEnemyPosition();
     printPlayer(map->getNumberOfRows()-1-playerPos.row, playerPos.col,
             playerParticle, Graphic::playerColor);
     printPlayer(map->getNumberOfRows()-1-enemyPos.row, enemyPos.col,

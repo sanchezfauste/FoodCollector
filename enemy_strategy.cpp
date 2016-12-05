@@ -74,9 +74,9 @@ Direction EnemyStrategy::minimax_decision(int depth) {
 
 double EnemyStrategy::evaluationFunction(Map &map) {
     double totalScore = map.getEatedFoodByEnemy() * 10;
-    Point enemyPosition = map.getEnemyPosition();
-    set<Point> foodCells = map.getFoodCells();
-    for (set<Point>::iterator a = foodCells.begin(); a != foodCells.end(); ++a) {
+    Position enemyPosition = map.getEnemyPosition();
+    set<Position> foodCells = map.getFoodCells();
+    for (set<Position>::iterator a = foodCells.begin(); a != foodCells.end(); ++a) {
         double d = minDistance(*a, enemyPosition);
         totalScore += 1.0/(d*d);
     }
@@ -101,6 +101,6 @@ Direction EnemyStrategy::getRandomDirection(list<Direction> directions) {
     return *n;
 }
 
-double EnemyStrategy::minDistance(Point p1, Point p2) {
+double EnemyStrategy::minDistance(Position p1, Position p2) {
     return abs(p1.row - p2.row) + abs(p1.col - p2.col);
 }

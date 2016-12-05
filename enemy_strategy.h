@@ -25,7 +25,7 @@ class EnemyStrategy {
     double min(double v1, double v2);
     double abs(double v1);
     Direction getRandomDirection(list<Direction> directions);
-    double minDistance(Point p1, Point p2);
+    double minDistance(Position p1, Position p2);
 
   public:
     EnemyStrategy(Map *map);

@@ -28,31 +28,31 @@ enum Direction {
     None
 };
 
-typedef struct Point {
+typedef struct Position {
     const int row;
     const int col;
-    Point(const int row, const int col);
-    Point();
-    bool operator<(const Point &p) const;
-} Point;
+    Position(const int row, const int col);
+    Position();
+    bool operator<(const Position &p) const;
+} Position;
 
 class Map {
 
     vector<vector<CellType> > cells;
     const int nRows, nCols;
-    Point *playerPosition;
-    Point *enemyPosition;
+    Position *playerPosition;
+    Position *enemyPosition;
     int eatedFoodByPlayer;
     int eatedFoodByEnemy;
-    const Point playerInitialPosition;
-    const Point enemyInitialPosition;
+    const Position playerInitialPosition;
+    const Position enemyInitialPosition;
     int numberOfAvailableFood;
     Direction currentPlayerDirection;
     Direction nextPlayerDirection;
-    set<Point> foodCells;
+    set<Position> foodCells;
 
     void initializeAvailableFood();
-    void eatFood(Point p, CellType player);
+    void eatFood(Position p, CellType player);
     list<Direction> getEnemyLegalMoves();
     list<Direction> getPlayerLegalMoves();
 
@@ -61,32 +61,32 @@ class Map {
     static const int minCols;
 
     Map(const int nRows, const int nCols);
-    Map(const int nRows, const int nCols, const Point playerInitialPosition,
-            const Point enemyInitialPosition);
+    Map(const int nRows, const int nCols, const Position playerInitialPosition,
+            const Position enemyInitialPosition);
     Map(const Map &m);
     void print();
     void copySymmetricLeftToRight();
     int getNumberOfRows();
     int getNumberOfCols();
-    void copySubMap(Map &m, Point startingPoint);
-    void setAreaCellsType(Point &initialPoint, Point &finalPoint, CellType ct);
+    void copySubMap(Map &m, Position startingPosition);
+    void setAreaCellsType(Position &initialPosition, Position &finalPosition, CellType ct);
     void setSubColCellType(int col, int rowBegin, int rowEnd, CellType ct);
-    bool allCellsVisited(set<Point> &visited);
-    list<Point> getNeighbors(Point &p);
-    list<Point> getUnvisitedNeighbors(Point &p, set<Point> &visitedCells);
-    Point getRandomPointOfList(list<Point> &points);
-    void removeWall(Point &p, Point &neighbor);
+    bool allCellsVisited(set<Position> &visited);
+    list<Position> getNeighbors(Position &p);
+    list<Position> getUnvisitedNeighbors(Position &p, set<Position> &visitedCells);
+    Position getRandomPositionOfList(list<Position> &Positions);
+    void removeWall(Position &p, Position &neighbor);
     vector<CellType> getRow(int row);
-    void setPlayerPosition(Point p);
-    void setEnemyPosition(Point p);
-    Point getPlayerPosition() const;
-    Point getEnemyPosition() const;
+    void setPlayerPosition(Position p);
+    void setEnemyPosition(Position p);
+    Position getPlayerPosition() const;
+    Position getEnemyPosition() const;
     void playerMove(Direction d);
     void enemyMove(Direction d);
     bool playerCanMoveTo(Direction d);
     bool enemyCanMoveTo(Direction d);
-    CellType getPointCellType(Point p);
-    Point getNeighborPoint(Point p, Direction d);
+    CellType getPositionCellType(Position p);
+    Position getNeighborPosition(Position p, Direction d);
     int getEatedFoodByPlayer();
     int getEatedFoodByEnemy();
     void initGame();
@@ -97,7 +97,7 @@ class Map {
     list<Direction> getLegalMoves(CellType agent);
     bool isFoodAvailable();
     Map generateSuccessor(CellType agent, Direction action);
-    set<Point> getFoodCells();
+    set<Position> getFoodCells();
 
 };
 
