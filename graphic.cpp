@@ -38,6 +38,8 @@ Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue) :
 
 Size::Size(const float width, const float height) : width(width), height(height){}
 
+Point::Point(const GLfloat x, const GLfloat y, const GLfloat z) : x(x), y(y), z(z) {}
+
 Graphic::Graphic() : playerParticle(Particle()), enemyParticle(Particle()),
         enemyStrategy(NULL), angleAlpha(270), angleBeta(60){}
 
@@ -373,107 +375,106 @@ void Graphic::drawTank(int row, int col, Particle &p, Color color) {
         glScalef(30/300.0, 30/300.0, 30/300.0);
         glRotatef(90, 0, 0, 1);
         //Draw the axis
-        drawCylinder(Graphic::tankColor, 100, 0, -250/2.0, 25, 250);
-        drawCylinder(Graphic::tankColor, -100, 0, -250/2.0, 25, 250);
+        drawCylinder(Graphic::tankColor, Point(100, 0, -250/2.0), 25, 250);
+        drawCylinder(Graphic::tankColor, Point(-100, 0, -250/2.0), 25, 250);
         //Axis hubcaps
-        drawSphere(Graphic::tankColor, -100, 250/2.0, 0, 25);
-        drawSphere(Graphic::tankColor, 100, 250/2.0, 0, 25);
-        drawSphere(Graphic::tankColor, 100, -250/2.0, 0, 25);
-        drawSphere(Graphic::tankColor, -100, -250/2.0, 0, 25);
+        drawSphere(Graphic::tankColor, Point(-100, 250/2.0, 0), 25);
+        drawSphere(Graphic::tankColor, Point(100, 250/2.0, 0), 25);
+        drawSphere(Graphic::tankColor, Point(100, -250/2.0, 0), 25);
+        drawSphere(Graphic::tankColor, Point(-100, -250/2.0, 0), 25);
         //Tank body
-        drawCube(color, 0, 0, 25, 150, 150, 50);
-        drawCube(Graphic::tankColor, 0, 0, 75, 75, 75, 60);
+        drawCube(color, Point(0, 0, 25), 150, 150, 50);
+        drawCube(Graphic::tankColor, Point(0, 0, 75), 75, 75, 60);
         //Canon
-        drawCylinder(Graphic::tankCanonColor, 0, -60-25/2.0, 0,  25, 150);
+        drawCylinder(Graphic::tankCanonColor, Point(0, -60-25/2.0, 0),  25, 150);
         //Wheels
-        drawSphere(Graphic::tankWeelsColor, 110, 40, 0, 20);
-        drawSphere(Graphic::tankWeelsColor, 110, -40, 0, 20);
-        drawSphere(Graphic::tankWeelsColor, 110, 90, 0, 20);
-        drawSphere(Graphic::tankWeelsColor, 110, -90, 0, 20);
-        drawSphere(Graphic::tankWeelsColor, -110, 40, 0, 20);
-        drawSphere(Graphic::tankWeelsColor, -110, -40, 0, 20);
-        drawSphere(Graphic::tankWeelsColor, -110, 90, 0, 20);
-        drawSphere(Graphic::tankWeelsColor, -110, -90, 0, 20);
+        drawSphere(Graphic::tankWeelsColor, Point(110, 40, 0), 20);
+        drawSphere(Graphic::tankWeelsColor, Point(110, -40, 0), 20);
+        drawSphere(Graphic::tankWeelsColor, Point(110, 90, 0), 20);
+        drawSphere(Graphic::tankWeelsColor, Point(110, -90, 0), 20);
+        drawSphere(Graphic::tankWeelsColor, Point(-110, 40, 0), 20);
+        drawSphere(Graphic::tankWeelsColor, Point(-110, -40, 0), 20);
+        drawSphere(Graphic::tankWeelsColor, Point(-110, 90, 0), 20);
+        drawSphere(Graphic::tankWeelsColor, Point(-110, -90, 0), 20);
     glPopMatrix ();
 }
 
-void Graphic::drawCylinder(Color color, GLfloat x, GLfloat y, GLfloat z,
-        GLdouble radius, GLdouble height) {
+void Graphic::drawCylinder(Color color, Point p, GLdouble radius, GLdouble height) {
     glPushMatrix();
         glColor3f(color.red, color.green, color.blue);
         glRotatef(-90, 1, 0, 0);
-        glTranslatef(x, y, z);
+        glTranslatef(p.x, p.y, p.z);
         gluCylinder(gluNewQuadric(), radius, radius, height, 10, 10);
     glPopMatrix ();
 }
 
-void Graphic::drawSphere(Color color, GLfloat x, GLfloat y, GLfloat z, GLdouble radius) {
+void Graphic::drawSphere(Color color, Point p, GLdouble radius) {
     glPushMatrix();
-        glTranslatef(x, y, z);
+        glTranslatef(p.x, p.y, p.z);
         glColor3f(color.red, color.green, color.blue);
         glutSolidSphere(radius, 10, 10);
     glPopMatrix ();
 }
 
-void Graphic::drawCube(Color color, GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GLfloat depth) {
+void Graphic::drawCube(Color color, Point p, GLfloat width, GLfloat height, GLfloat depth) {
     GLfloat x1 = width/2;
     GLfloat y1 = height/2;
     GLfloat z1 = depth/2;
 
     glColor3f(color.red, color.green, color.blue);
     glBegin(GL_QUADS);
-    glVertex3f(x + x1, y + y1, z + z1);
-    glVertex3f(x - x1, y + y1, z + z1);
-    glVertex3f(x - x1, y - y1, z + z1);
-    glVertex3f(x + x1, y - y1, z + z1);
+    glVertex3f(p.x + x1, p.y + y1, p.z + z1);
+    glVertex3f(p.x - x1, p.y + y1, p.z + z1);
+    glVertex3f(p.x - x1, p.y - y1, p.z + z1);
+    glVertex3f(p.x + x1, p.y - y1, p.z + z1);
     glEnd();
 
     glColor3f(color.red, color.green, color.blue);
     glBegin(GL_QUADS);
-    glVertex3f(x + x1, y + y1, z + z1 - 1);
-    glVertex3f(x - x1, y + y1, z + z1 - 1);
-    glVertex3f(x - x1, y - y1, z + z1 - 1);
-    glVertex3f(x + x1, y - y1, z + z1 - 1);
+    glVertex3f(p.x + x1, p.y + y1, p.z + z1 - 1);
+    glVertex3f(p.x - x1, p.y + y1, p.z + z1 - 1);
+    glVertex3f(p.x - x1, p.y - y1, p.z + z1 - 1);
+    glVertex3f(p.x + x1, p.y - y1, p.z + z1 - 1);
     glEnd();
 
     glColor3f(color.red, color.green, color.blue);
     glBegin(GL_QUADS);
-    glVertex3f(x + x1, y - y1, z + -z1);
-    glVertex3f(x - x1, y - y1, z + -z1);
-    glVertex3f(x - x1, y + y1, z + -z1);
-    glVertex3f(x + x1, y + y1, z + -z1);
+    glVertex3f(p.x + x1, p.y - y1, p.z + -z1);
+    glVertex3f(p.x - x1, p.y - y1, p.z + -z1);
+    glVertex3f(p.x - x1, p.y + y1, p.z + -z1);
+    glVertex3f(p.x + x1, p.y + y1, p.z + -z1);
     glEnd();
 
     glColor3f(color.red, color.green, color.blue);
     glBegin(GL_QUADS);
-    glVertex3f(x + x1, y - y1, z + z1 - 1);
-    glVertex3f(x + x1, y - y1, z + -z1);
-    glVertex3f(x + x1, y + y1, z + -z1);
-    glVertex3f(x + x1, y + y1, z + z1 - 1);
+    glVertex3f(p.x + x1, p.y - y1, p.z + z1 - 1);
+    glVertex3f(p.x + x1, p.y - y1, p.z + -z1);
+    glVertex3f(p.x + x1, p.y + y1, p.z + -z1);
+    glVertex3f(p.x + x1, p.y + y1, p.z + z1 - 1);
     glEnd();
 
     glColor3f(color.red, color.green, color.blue);
     glBegin(GL_QUADS);
-    glVertex3f(x - x1, y + y1, z + z1 - 1);
-    glVertex3f(x - x1, y + y1, z + -z1);
-    glVertex3f(x - x1, y - y1, z + -z1);
-    glVertex3f(x - x1, y - y1, z + z1 - 1);
+    glVertex3f(p.x - x1, p.y + y1, p.z + z1 - 1);
+    glVertex3f(p.x - x1, p.y + y1, p.z + -z1);
+    glVertex3f(p.x - x1, p.y - y1, p.z + -z1);
+    glVertex3f(p.x - x1, p.y - y1, p.z + z1 - 1);
     glEnd();
 
     glColor3f(color.red, color.green, color.blue);
     glBegin(GL_QUADS);
-    glVertex3f(x - x1, y + y1, z + -z1);
-    glVertex3f(x - x1, y + y1, z + z1 - 1);
-    glVertex3f(x + x1, y + y1, z + z1 - 1);
-    glVertex3f(x + x1, y + y1, z + -z1);
+    glVertex3f(p.x - x1, p.y + y1, p.z + -z1);
+    glVertex3f(p.x - x1, p.y + y1, p.z + z1 - 1);
+    glVertex3f(p.x + x1, p.y + y1, p.z + z1 - 1);
+    glVertex3f(p.x + x1, p.y + y1, p.z + -z1);
     glEnd();
 
     glColor3f(color.red, color.green, color.blue);
     glBegin(GL_QUADS);
-    glVertex3f(x + x1, y - y1, z + -z1);
-    glVertex3f(x + x1, y - y1, z + z1 - 1);
-    glVertex3f(x - x1, y - y1, z + z1 - 1);
-    glVertex3f(x - x1, y - y1, z + -z1);
+    glVertex3f(p.x + x1, p.y - y1, p.z + -z1);
+    glVertex3f(p.x + x1, p.y - y1, p.z + z1 - 1);
+    glVertex3f(p.x - x1, p.y - y1, p.z + z1 - 1);
+    glVertex3f(p.x - x1, p.y - y1, p.z + -z1);
     glEnd();
 }
 

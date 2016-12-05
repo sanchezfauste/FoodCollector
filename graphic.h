@@ -27,6 +27,13 @@ typedef struct Size {
     Size(const float width, const float height);
 } Size;
 
+typedef struct Point {
+    const GLfloat x;
+    const GLfloat y;
+    const GLfloat z;
+    Point(const GLfloat x, const GLfloat y, const GLfloat z);
+} Point;
+
 void display();
 void keyboard(unsigned char c, int x, int y);
 void keyboardSpecial(int key, int x, int y);
@@ -91,11 +98,9 @@ class Graphic {
     void drawWall(int row, int col);
     void drawFood(int row, int col);
     void drawTank(int row, int col, Particle &p, Color color);
-    void drawCylinder(Color color, GLfloat x, GLfloat y, GLfloat z,
-            GLdouble radius, GLdouble height);
-    void drawSphere(Color color, GLfloat x, GLfloat y, GLfloat z, GLdouble radius);
-    void drawCube(Color color, GLfloat x, GLfloat y, GLfloat z, GLfloat width,
-            GLfloat height, GLfloat depth);
+    void drawCylinder(Color color, Point p, GLdouble radius, GLdouble height);
+    void drawSphere(Color color, Point p, GLdouble radius);
+    void drawCube(Color color, Point p, GLfloat width, GLfloat height, GLfloat depth);
     void printText(float width, float height, string str);
     void printScore(float width, float height);
     void initDisplay();
