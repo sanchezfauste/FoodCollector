@@ -48,6 +48,10 @@ State Particle::getState() {
     return state;
 }
 
+void Particle::setState(State state) {
+    this->state = state;
+}
+
 Direction Particle::getDirection() {
     return direction;
 }
