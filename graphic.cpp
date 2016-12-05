@@ -10,13 +10,16 @@ Copyright (C) 2016 Marc Sanchez
 
 using namespace std;
 
-const Color Graphic::backgroundColor = Color(0.0, 0.0, 0.0);
+const Color Graphic::backgroundColor = Color(0.15, 0.15, 0.15);
 const Color Graphic::wallColor = Color(0.0, 0.70, 0.3);
 const Color Graphic::wallSideColor = Color(0.0, 0.35, 0.15);
 const Color Graphic::foodColor = Color(1.0, 0.64, 0);
 const Color Graphic::playerColor = Color(0.13, 0.54, 0.13);
 const Color Graphic::enemyColor = Color(0.7, 0.13, 0.13);
 const Color Graphic::textColor = Color(1.0, 1.0, 1.0);
+const Color Graphic::tankColor = Color(0, 0, 0);
+const Color Graphic::tankWeelsColor = Color(0.38, 0.38, 0.38);
+const Color Graphic::tankCanonColor = Color(0, 0, 0);
 const Size Graphic::scoreInfoPosition = Size(7.5, 7.5);
 const double Graphic::glutRatio = 1.1;
 
@@ -339,7 +342,7 @@ void Graphic::drawFood(int row, int col) {
 }
 
 void Graphic::drawTank(int row, int col, Particle &p, Color color) {
-    long widthTranslation = 0;
+    /*long widthTranslation = 0;
     long heightTranslation = 0;
     if (p.getState() != Quiet) {
         widthTranslation = p.getCurrentWidthTranslation();
@@ -352,7 +355,124 @@ void Graphic::drawTank(int row, int col, Particle &p, Color color) {
         glColor3f(color.red, color.green, color.blue);
         glutSolidSphere(Graphic::foodRadius, Graphic::sphereSlices,
             Graphic::sphereStacks);
+    glPopMatrix ();*/
+
+    GLfloat widthTranslation = 0;
+    GLfloat heightTranslation = 0;
+    if (p.getState() != Quiet) {
+        widthTranslation = p.getCurrentWidthTranslation();
+        heightTranslation = p.getCurrentHeightTranslation();
+    }
+    GLfloat x = (col + 0.5) * Graphic::cellWidth - this->width/2 + widthTranslation;
+    GLfloat y = (row + 0.5) * Graphic::cellHeight - this->height/2 + heightTranslation;
+    GLfloat z = 0;
+    glPushMatrix();
+        glTranslatef(x, y, z);
+        glScalef(30/300.0, 30/300.0, 30/300.0);
+        glRotatef(90, 0, 0, 1);
+        //Draw the axis
+        drawCylinder(Graphic::tankColor, 100, 0, -250/2.0, 25, 250);
+        drawCylinder(Graphic::tankColor, -100, 0, -250/2.0, 25, 250);
+        //Axis hubcaps
+        drawSphere(Graphic::tankColor, -100, 250/2.0, 0, 25);
+        drawSphere(Graphic::tankColor, 100, 250/2.0, 0, 25);
+        drawSphere(Graphic::tankColor, 100, -250/2.0, 0, 25);
+        drawSphere(Graphic::tankColor, -100, -250/2.0, 0, 25);
+        //Tank body
+        drawCube(color, 0, 0, 25, 150, 150, 50);
+        drawCube(Graphic::tankColor, 0, 0, 75, 75, 75, 60);
+        //Canon
+        drawCylinder(Graphic::tankCanonColor, 0, -60-25/2.0, 0,  25, 150);
+        //Wheels
+        drawSphere(Graphic::tankWeelsColor, 110, 40, 0, 20);
+        drawSphere(Graphic::tankWeelsColor, 110, -40, 0, 20);
+        drawSphere(Graphic::tankWeelsColor, 110, 90, 0, 20);
+        drawSphere(Graphic::tankWeelsColor, 110, -90, 0, 20);
+        drawSphere(Graphic::tankWeelsColor, -110, 40, 0, 20);
+        drawSphere(Graphic::tankWeelsColor, -110, -40, 0, 20);
+        drawSphere(Graphic::tankWeelsColor, -110, 90, 0, 20);
+        drawSphere(Graphic::tankWeelsColor, -110, -90, 0, 20);
     glPopMatrix ();
+}
+
+void Graphic::drawCylinder(Color color, GLfloat x, GLfloat y, GLfloat z,
+        GLdouble radius, GLdouble height) {
+    glPushMatrix();
+        glColor3f(color.red, color.green, color.blue);
+        glRotatef(-90, 1, 0, 0);
+        glTranslatef(x, y, z);
+        gluCylinder(gluNewQuadric(), radius, radius, height, 10, 10);
+    glPopMatrix ();
+}
+
+void Graphic::drawSphere(Color color, GLfloat x, GLfloat y, GLfloat z, GLdouble radius) {
+    glPushMatrix();
+        glTranslatef(x, y, z);
+        glColor3f(color.red, color.green, color.blue);
+        glutSolidSphere(radius, 10, 10);
+    glPopMatrix ();
+}
+
+void Graphic::drawCube(Color color, GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GLfloat depth) {
+    GLfloat x1 = width/2;
+    GLfloat y1 = height/2;
+    GLfloat z1 = depth/2;
+
+    glColor3f(color.red, color.green, color.blue);
+    glBegin(GL_QUADS);
+    glVertex3f(x + x1, y + y1, z + z1);
+    glVertex3f(x - x1, y + y1, z + z1);
+    glVertex3f(x - x1, y - y1, z + z1);
+    glVertex3f(x + x1, y - y1, z + z1);
+    glEnd();
+
+    glColor3f(color.red, color.green, color.blue);
+    glBegin(GL_QUADS);
+    glVertex3f(x + x1, y + y1, z + z1 - 1);
+    glVertex3f(x - x1, y + y1, z + z1 - 1);
+    glVertex3f(x - x1, y - y1, z + z1 - 1);
+    glVertex3f(x + x1, y - y1, z + z1 - 1);
+    glEnd();
+
+    glColor3f(color.red, color.green, color.blue);
+    glBegin(GL_QUADS);
+    glVertex3f(x + x1, y - y1, z + -z1);
+    glVertex3f(x - x1, y - y1, z + -z1);
+    glVertex3f(x - x1, y + y1, z + -z1);
+    glVertex3f(x + x1, y + y1, z + -z1);
+    glEnd();
+
+    glColor3f(color.red, color.green, color.blue);
+    glBegin(GL_QUADS);
+    glVertex3f(x + x1, y - y1, z + z1 - 1);
+    glVertex3f(x + x1, y - y1, z + -z1);
+    glVertex3f(x + x1, y + y1, z + -z1);
+    glVertex3f(x + x1, y + y1, z + z1 - 1);
+    glEnd();
+
+    glColor3f(color.red, color.green, color.blue);
+    glBegin(GL_QUADS);
+    glVertex3f(x - x1, y + y1, z + z1 - 1);
+    glVertex3f(x - x1, y + y1, z + -z1);
+    glVertex3f(x - x1, y - y1, z + -z1);
+    glVertex3f(x - x1, y - y1, z + z1 - 1);
+    glEnd();
+
+    glColor3f(color.red, color.green, color.blue);
+    glBegin(GL_QUADS);
+    glVertex3f(x - x1, y + y1, z + -z1);
+    glVertex3f(x - x1, y + y1, z + z1 - 1);
+    glVertex3f(x + x1, y + y1, z + z1 - 1);
+    glVertex3f(x + x1, y + y1, z + -z1);
+    glEnd();
+
+    glColor3f(color.red, color.green, color.blue);
+    glBegin(GL_QUADS);
+    glVertex3f(x + x1, y - y1, z + -z1);
+    glVertex3f(x + x1, y - y1, z + z1 - 1);
+    glVertex3f(x - x1, y - y1, z + z1 - 1);
+    glVertex3f(x - x1, y - y1, z + -z1);
+    glEnd();
 }
 
 void Graphic::glutIdle() {

@@ -40,6 +40,9 @@ class Graphic {
     static const Color foodColor;
     static const Color playerColor;
     static const Color enemyColor;
+    static const Color tankColor;
+    static const Color tankWeelsColor;
+    static const Color tankCanonColor;
     static const Color textColor;
     static const char* const gameTitle;
     static const Size scoreInfoPosition;
@@ -88,6 +91,11 @@ class Graphic {
     void drawWall(int row, int col);
     void drawFood(int row, int col);
     void drawTank(int row, int col, Particle &p, Color color);
+    void drawCylinder(Color color, GLfloat x, GLfloat y, GLfloat z,
+            GLdouble radius, GLdouble height);
+    void drawSphere(Color color, GLfloat x, GLfloat y, GLfloat z, GLdouble radius);
+    void drawCube(Color color, GLfloat x, GLfloat y, GLfloat z, GLfloat width,
+            GLfloat height, GLfloat depth);
     void printText(float width, float height, string str);
     void printScore(float width, float height);
     void initDisplay();
