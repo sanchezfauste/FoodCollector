@@ -31,6 +31,8 @@ const int Graphic::cellDepth = 8;
 const int Graphic::foodRadius = 5;
 const GLint Graphic::sphereSlices = 10;
 const GLint Graphic::sphereStacks = 10;
+const GLint Graphic::cylinderSlices = 10;
+const GLint Graphic::cylinderStacks = 10;
 const long Graphic::playerMovementTime = 150;
 
 Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue) :
@@ -373,7 +375,7 @@ void Graphic::drawTank(int row, int col, Particle &p, Color color) {
     glPushMatrix();
         glTranslatef(x, y, z);
         glScalef(30/300.0, 30/300.0, 30/300.0);
-        glRotatef(90, 0, 0, 1);
+        glRotatef(-90, 0, 0, -1);
         //Draw the axis
         drawCylinder(Graphic::tankColor, Point(100, 0, -250/2.0), 25, 250);
         drawCylinder(Graphic::tankColor, Point(-100, 0, -250/2.0), 25, 250);
@@ -404,7 +406,8 @@ void Graphic::drawCylinder(Color color, Point p, GLdouble radius, GLdouble heigh
         glColor3f(color.red, color.green, color.blue);
         glRotatef(-90, 1, 0, 0);
         glTranslatef(p.x, p.y, p.z);
-        gluCylinder(gluNewQuadric(), radius, radius, height, 10, 10);
+        gluCylinder(gluNewQuadric(), radius, radius, height,
+                Graphic::cylinderSlices, Graphic::cylinderStacks);
     glPopMatrix ();
 }
 
@@ -412,7 +415,7 @@ void Graphic::drawSphere(Color color, Point p, GLdouble radius) {
     glPushMatrix();
         glTranslatef(p.x, p.y, p.z);
         glColor3f(color.red, color.green, color.blue);
-        glutSolidSphere(radius, 10, 10);
+        glutSolidSphere(radius, Graphic::sphereSlices, Graphic::sphereStacks);
     glPopMatrix ();
 }
 

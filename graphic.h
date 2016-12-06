@@ -81,6 +81,8 @@ class Graphic {
     static const int foodRadius;
     static const GLint sphereSlices;
     static const GLint sphereStacks;
+    static const GLint cylinderSlices;
+    static const GLint cylinderStacks;
     static const long playerMovementTime;
 
     static Graphic& getInstance();
