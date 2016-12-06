@@ -8,6 +8,7 @@ Copyright (C) 2016 Marc Sanchez
 
 #include "map.h"
 #include "particle.h"
+#include "tank_particle.h"
 #include "enemy_strategy.h"
 #include <GL/glut.h>
 #include <string>
@@ -54,14 +55,16 @@ class Graphic {
     static const char* const gameTitle;
     static const Size scoreInfoPosition;
     static const double glutRatio;
+    static const Direction defaultPlayerTankDirection;
+    static const Direction defaultEnemyTankDirection;
 
     Map* map;
     int width;
     int height;
     int glutWidth;
     int glutHeight;
-    Particle playerParticle;
-    Particle enemyParticle;
+    TankParticle playerParticle;
+    TankParticle enemyParticle;
     long lastTime;
     EnemyStrategy *enemyStrategy;
     int angleAlpha;
@@ -71,7 +74,7 @@ class Graphic {
     Graphic(Graphic const&);
     void operator=(Graphic const&);
     void playerMove(Direction d);
-    void printPlayer(int row, int col, Particle &particle, Color color);
+    void printPlayer(int row, int col, TankParticle &particle, Color color);
     void enemyMove(Direction d);
 
   public:
@@ -99,7 +102,7 @@ class Graphic {
     int getScreenHeight();
     void drawWall(int row, int col);
     void drawFood(int row, int col);
-    void drawTank(int row, int col, Particle &p, Color color);
+    void drawTank(int row, int col, TankParticle &p, Color color);
     void drawCylinder(Color color, Point p, GLdouble radius, GLdouble height);
     void drawSphere(Color color, Point p, GLdouble radius);
     void drawCube(Color color, Point p, GLfloat width, GLfloat height, GLfloat depth);

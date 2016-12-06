@@ -22,6 +22,8 @@ const Color Graphic::tankWeelsColor = Color(0.38, 0.38, 0.38);
 const Color Graphic::tankCanonColor = Color(0, 0, 0);
 const Size Graphic::scoreInfoPosition = Size(7.5, 7.5);
 const double Graphic::glutRatio = 1.1;
+const Direction Graphic::defaultPlayerTankDirection = Right;
+const Direction Graphic::defaultEnemyTankDirection = Left;
 
 const char* const Graphic::gameTitle = "Food Collection Game - Tuita Team";
 
@@ -42,7 +44,8 @@ Size::Size(const float width, const float height) : width(width), height(height)
 
 Point::Point(const GLfloat x, const GLfloat y, const GLfloat z) : x(x), y(y), z(z) {}
 
-Graphic::Graphic() : playerParticle(Particle()), enemyParticle(Particle()),
+Graphic::Graphic() : playerParticle(TankParticle(Graphic::defaultPlayerTankDirection)),
+        enemyParticle(TankParticle(Graphic::defaultEnemyTankDirection)),
         enemyStrategy(NULL), angleAlpha(270), angleBeta(60){}
 
 Graphic& Graphic::getInstance() {
@@ -58,7 +61,9 @@ void Graphic::setMap(Map& map) {
     this->map = new Map(map);
     enemyStrategy = new EnemyStrategy(this->map);
     playerParticle.setState(Quiet);
+    playerParticle.setTankOrientation(Graphic::defaultPlayerTankDirection);
     enemyParticle.setState(Quiet);
+    enemyParticle.setTankOrientation(Graphic::defaultEnemyTankDirection);
 }
 
 int Graphic::getScreenWidth() {
@@ -145,7 +150,7 @@ void Graphic::printScore(float width, float height) {
     printText(-this->width/2 + width, -this->height/2 + height, convert.str());
 }
 
-void Graphic::printPlayer(int row, int col, Particle &particle, Color color) {
+void Graphic::printPlayer(int row, int col, TankParticle &particle, Color color) {
     drawTank(row, col, particle, color);
 }
 
@@ -207,8 +212,7 @@ void Graphic::playerMove(Direction d) {
         if (map->playerCanMoveTo(d) && d != None) {
             map->setCurrentPlayerDirection(d);
             Size translation = Graphic::getTranslation(d);
-            playerParticle.initMovement(translation.width, translation.height,
-                    Graphic::playerMovementTime, d);
+            playerParticle.initMovement(translation.width, translation.height, d);
         }
     } else {
         map->setNextPlayerDirection(d);
@@ -219,8 +223,7 @@ void Graphic::enemyMove(Direction d) {
     if (enemyParticle.getState() != Moving) {
         if (map->enemyCanMoveTo(d) && d != None) {
             Size translation = Graphic::getTranslation(d);
-            enemyParticle.initMovement(translation.width, translation.height,
-                    Graphic::playerMovementTime, d);
+            enemyParticle.initMovement(translation.width, translation.height, d);
         }
     }
 }
@@ -347,22 +350,7 @@ void Graphic::drawFood(int row, int col) {
     glPopMatrix ();
 }
 
-void Graphic::drawTank(int row, int col, Particle &p, Color color) {
-    /*long widthTranslation = 0;
-    long heightTranslation = 0;
-    if (p.getState() != Quiet) {
-        widthTranslation = p.getCurrentWidthTranslation();
-        heightTranslation = p.getCurrentHeightTranslation();
-    }
-    int x = (col + 0.5) * Graphic::cellWidth - this->width/2 + widthTranslation;
-    int y = (row + 0.5) * Graphic::cellHeight - this->height/2 + heightTranslation;
-    glPushMatrix();
-        glTranslatef(x, y, 0);
-        glColor3f(color.red, color.green, color.blue);
-        glutSolidSphere(Graphic::foodRadius, Graphic::sphereSlices,
-            Graphic::sphereStacks);
-    glPopMatrix ();*/
-
+void Graphic::drawTank(int row, int col, TankParticle &p, Color color) {
     GLfloat widthTranslation = 0;
     GLfloat heightTranslation = 0;
     if (p.getState() != Quiet) {
@@ -375,7 +363,7 @@ void Graphic::drawTank(int row, int col, Particle &p, Color color) {
     glPushMatrix();
         glTranslatef(x, y, z);
         glScalef(30/300.0, 30/300.0, 30/300.0);
-        glRotatef(-90, 0, 0, -1);
+        glRotatef(p.getDegreesTranslation(), 0, 0, -1);
         //Draw the axis
         drawCylinder(Graphic::tankColor, Point(100, 0, -250/2.0), 25, 250);
         drawCylinder(Graphic::tankColor, Point(-100, 0, -250/2.0), 25, 250);
@@ -508,8 +496,7 @@ void Graphic::glutIdle() {
             Direction d = enemyStrategy->getAction();
             if (map->enemyCanMoveTo(d)) {
                 Size translation = Graphic::getTranslation(d);
-                enemyParticle.initMovement(translation.width,
-                        translation.height, Graphic::playerMovementTime, d);
+                enemyParticle.initMovement(translation.width, translation.height, d);
             }
         }
         lastTime = t;
