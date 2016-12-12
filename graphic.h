@@ -81,6 +81,9 @@ class Graphic {
     static const int cellWidth;
     static const int cellHeight;
     static const int cellDepth;
+    static const GLfloat tankWidth;
+    static const GLfloat tankHeight;
+    static const GLfloat tankDepth;
     static const int foodRadius;
     static const GLint sphereSlices;
     static const GLint sphereStacks;

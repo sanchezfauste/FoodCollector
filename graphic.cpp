@@ -30,6 +30,9 @@ const char* const Graphic::gameTitle = "Food Collection Game - Tuita Team";
 const int Graphic::cellWidth = 30;
 const int Graphic::cellHeight = 30;
 const int Graphic::cellDepth = 8;
+const GLfloat Graphic::tankWidth = 25;
+const GLfloat Graphic::tankHeight = 25;
+const GLfloat Graphic::tankDepth = 25;
 const int Graphic::foodRadius = 5;
 const GLint Graphic::sphereSlices = 10;
 const GLint Graphic::sphereStacks = 10;
@@ -362,7 +365,8 @@ void Graphic::drawTank(int row, int col, TankParticle &p, Color color) {
     GLfloat z = 0;
     glPushMatrix();
         glTranslatef(x, y, z);
-        glScalef(30/300.0, 30/300.0, 30/300.0);
+        glScalef(Graphic::tankWidth/300.0, Graphic::tankHeight/300.0,
+                Graphic::tankDepth/300.0);
         glRotatef(p.getDegreesTranslation(), 0, 0, -1);
         //Draw the axis
         drawCylinder(Graphic::tankColor, Point(100, 0, -250/2.0), 25, 250);
