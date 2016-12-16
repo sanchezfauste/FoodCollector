@@ -5,14 +5,13 @@ Copyright (C) 2016 Marc Sanchez
 
 #include "graphic.h"
 #include "mapgenerator.h"
+#include "texture_loader.h"
 #include <sstream>
 #include <math.h>
 
 using namespace std;
 
 const Color Graphic::backgroundColor = Color(0.15, 0.15, 0.15);
-const Color Graphic::wallColor = Color(0.0, 0.70, 0.3);
-const Color Graphic::wallSideColor = Color(0.0, 0.35, 0.15);
 const Color Graphic::foodColor = Color(1.0, 0.64, 0);
 const Color Graphic::playerColor = Color(0.13, 0.54, 0.13);
 const Color Graphic::enemyColor = Color(0.7, 0.13, 0.13);
@@ -101,6 +100,7 @@ void Graphic::glutRun() {
     glutSpecialFunc(keyboardSpecial);
     glutIdleFunc(idle);
     lastTime = 0;
+    TextureLoader::LoadTextures();
     glutMainLoop();
 }
 
@@ -114,11 +114,14 @@ void Graphic::glutDisplay() {
                     drawWall(row, col);
                     break;
                 case Corridor:
+                    drawFloor(row, col);
                     break;
                 case Food:
                     Graphic::drawFood(row, col);
+                    drawFloor(row, col);
                     break;
                 default:
+                    drawFloor(row, col);
                     break;
             }
         }
@@ -269,6 +272,29 @@ void idle() {
     Graphic::getInstance().glutIdle();
 }
 
+void Graphic::drawFloor(int row, int col) {
+    int x = (col + 0.5) * Graphic::cellWidth - this->width/2;
+    int y = (row + 0.5) * Graphic::cellHeight - this->height/2;
+    int z = Graphic::cellDepth;
+    int x1 = Graphic::cellWidth/2;
+    int y1 = Graphic::cellHeight/2;
+    int z1 = z/2;
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, Water);
+    glBegin(GL_QUADS);
+    glTexCoord2f(2.0, 2.0);
+    glVertex3i(x + x1, y + y1, -z1);
+    glTexCoord2f(-2.0, 2.0);
+    glVertex3i(x - x1, y + y1, -z1);
+    glTexCoord2f(-2.0, -2.0);
+    glVertex3i(x - x1, y - y1, -z1);
+    glTexCoord2f(2.0, -2.0);
+    glVertex3i(x + x1, y - y1, -z1);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+}
+
 void Graphic::drawWall(int row, int col) {
     int x = (col + 0.5) * Graphic::cellWidth - this->width/2;
     int y = (row + 0.5) * Graphic::cellHeight - this->height/2;
@@ -277,68 +303,96 @@ void Graphic::drawWall(int row, int col) {
     int y1 = Graphic::cellHeight/2;
     int z1 = z/2;
 
-    glColor3f(Graphic::wallColor.red, Graphic::wallColor.green,
-        Graphic::wallColor.blue);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, Grass);
     glBegin(GL_QUADS);
+    glTexCoord2f(2.0, 2.0);
     glVertex3i(x + x1, y + y1, z1);
+    glTexCoord2f(-2.0, 2.0);
     glVertex3i(x - x1, y + y1, z1);
+    glTexCoord2f(-2.0, -2.0);
     glVertex3i(x - x1, y - y1, z1);
+    glTexCoord2f(2.0, -2.0);
     glVertex3i(x + x1, y - y1, z1);
     glEnd();
 
-    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
-        Graphic::wallSideColor.blue);
+    glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
+    glTexCoord2f(2.0, 2.0);
     glVertex3i(x + x1, y + y1, z1 - 1);
+    glTexCoord2f(-2.0, 2.0);
     glVertex3i(x - x1, y + y1, z1 - 1);
+    glTexCoord2f(-2.0, -2.0);
     glVertex3i(x - x1, y - y1, z1 - 1);
+    glTexCoord2f(2.0, -2.0);
     glVertex3i(x + x1, y - y1, z1 - 1);
     glEnd();
 
-    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
-        Graphic::wallSideColor.blue);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
+    glTexCoord2f(2.0, -2.0);
     glVertex3i(x + x1, y - y1, -z1);
+    glTexCoord2f(-2.0, -2.0);
     glVertex3i(x - x1, y - y1, -z1);
+    glTexCoord2f(-2.0, 2.0);
     glVertex3i(x - x1, y + y1, -z1);
+    glTexCoord2f(2.0, 2.0);
     glVertex3i(x + x1, y + y1, -z1);
     glEnd();
 
-    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
-        Graphic::wallSideColor.blue);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
+    glTexCoord2f(2.0, -2.0);
     glVertex3i(x + x1, y - y1, z1 - 1);
+    glTexCoord2f(2.0, -2.0);
     glVertex3i(x + x1, y - y1, -z1);
+    glTexCoord2f(2.0, 2.0);
     glVertex3i(x + x1, y + y1, -z1);
+    glTexCoord2f(2.0, 2.0);
     glVertex3i(x + x1, y + y1, z1 - 1);
     glEnd();
 
-    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
-        Graphic::wallSideColor.blue);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
+    glTexCoord2f(-2.0, 2.0);
     glVertex3i(x - x1, y + y1, z1 - 1);
+    glTexCoord2f(-2.0, 2.0);
     glVertex3i(x - x1, y + y1, -z1);
+    glTexCoord2f(-2.0, -2.0);
     glVertex3i(x - x1, y - y1, -z1);
+    glTexCoord2f(-2.0, -2.0);
     glVertex3i(x - x1, y - y1, z1 - 1);
     glEnd();
 
-    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
-        Graphic::wallSideColor.blue);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
+    glTexCoord2f(-2.0, 2.0);
     glVertex3i(x - x1, y + y1, -z1);
+    glTexCoord2f(-2.0, 2.0);
     glVertex3i(x - x1, y + y1, z1 - 1);
+    glTexCoord2f(2.0, 2.0);
     glVertex3i(x + x1, y + y1, z1 - 1);
+    glTexCoord2f(2.0, 2.0);
     glVertex3i(x + x1, y + y1, -z1);
     glEnd();
 
-    glColor3f(Graphic::wallSideColor.red, Graphic::wallSideColor.green,
-        Graphic::wallSideColor.blue);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
+    glTexCoord2f(2.0, -2.0);
     glVertex3i(x + x1, y - y1, -z1);
+    glTexCoord2f(2.0, -2.0);
     glVertex3i(x + x1, y - y1, z1 - 1);
+    glTexCoord2f(-2.0, -2.0);
     glVertex3i(x - x1, y - y1, z1 - 1);
+    glTexCoord2f(-2.0, -2.0);
     glVertex3i(x - x1, y - y1, -z1);
     glEnd();
+    glDisable(GL_TEXTURE_2D);
 }
 
 void Graphic::drawFood(int row, int col) {

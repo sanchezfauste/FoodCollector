@@ -43,8 +43,6 @@ void idle();
 class Graphic {
 
     static const Color backgroundColor;
-    static const Color wallColor;
-    static const Color wallSideColor;
     static const Color foodColor;
     static const Color playerColor;
     static const Color enemyColor;
@@ -113,6 +111,7 @@ class Graphic {
     void printScore(float width, float height);
     void initDisplay();
     void positionObserver(float alpha, float beta, int radius);
+    void drawFloor(int row, int col);
 
 };
 
