@@ -61,7 +61,7 @@ void Graphic::setMap(Map& map) {
     }
     if (enemyStrategy == NULL) delete(enemyStrategy);
     this->map = new Map(map);
-    enemyStrategy = new EnemyStrategy(this->map);
+    enemyStrategy = new ExpectimaxStrategy(this->map);
     playerParticle.setState(Quiet);
     playerParticle.setTankOrientation(Graphic::defaultPlayerTankDirection);
     enemyParticle.setState(Quiet);

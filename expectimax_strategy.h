@@ -3,16 +3,15 @@ Copyright (C) 2016 Meritxell Jordana
 Copyright (C) 2016 Marc Sanchez
 */
 
-#ifndef __ENEMY_H
-#define __ENEMY_H
+#ifndef __EXPECTIMAX_STRATEGY_H
+#define __EXPECTIMAX_STRATEGY_H
 
 #include "map.h"
+#include "strategy.h"
 
 using namespace std;
 
-class EnemyStrategy {
-
-    Map *map;
+class ExpectimaxStrategy : public Strategy {
 
     double utility(Map &map);
     bool terminalTest(Map &map, int depth);
@@ -28,7 +27,7 @@ class EnemyStrategy {
     double minDistance(Position p1, Position p2);
 
   public:
-    EnemyStrategy(Map *map);
+    ExpectimaxStrategy(Map *map);
     Direction getAction();
 
 };

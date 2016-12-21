@@ -3,31 +3,31 @@ Copyright (C) 2016 Meritxell Jordana
 Copyright (C) 2016 Marc Sanchez
 */
 
-#include "enemy_strategy.h"
+#include "expectimax_strategy.h"
 #include <stdlib.h>
 #include <ctime>
 
-EnemyStrategy::EnemyStrategy(Map *map) : map(map) {
+ExpectimaxStrategy::ExpectimaxStrategy(Map *map) : Strategy(map) {
     srand(time(NULL));
 }
 
-Direction EnemyStrategy::getAction() {
+Direction ExpectimaxStrategy::getAction() {
     return minimax_decision(2);
 }
 
-double EnemyStrategy::utility(Map &map) {
+double ExpectimaxStrategy::utility(Map &map) {
     return evaluationFunction(map);
 }
 
-bool EnemyStrategy::terminalTest(Map &map, int depth) {
+bool ExpectimaxStrategy::terminalTest(Map &map, int depth) {
     return depth == 0 || !map.isFoodAvailable();
 }
 
-Map EnemyStrategy::result(Map &map, CellType agent, Direction action) {
+Map ExpectimaxStrategy::result(Map &map, CellType agent, Direction action) {
     return map.generateSuccessor(agent, action);
 }
 
-double EnemyStrategy::max_value(Map map, CellType agent, int depth) {
+double ExpectimaxStrategy::max_value(Map map, CellType agent, int depth) {
     if (terminalTest(map, depth)) {
         return utility(map);
     }
@@ -39,7 +39,7 @@ double EnemyStrategy::max_value(Map map, CellType agent, int depth) {
     return v;
 }
 
-double EnemyStrategy::min_value(Map map, CellType agent, int depth) {
+double ExpectimaxStrategy::min_value(Map map, CellType agent, int depth) {
     if (terminalTest(map, depth)) {
         return utility(map);
     }
@@ -55,7 +55,7 @@ double EnemyStrategy::min_value(Map map, CellType agent, int depth) {
     return v/legalMoves.size();
 }
 
-Direction EnemyStrategy::minimax_decision(int depth) {
+Direction ExpectimaxStrategy::minimax_decision(int depth) {
     double v = -3000000;
     list<Direction> legalMoves = map->getLegalMoves(Enemy);
     list<Direction> moves;
@@ -72,7 +72,7 @@ Direction EnemyStrategy::minimax_decision(int depth) {
     return getRandomDirection(moves);
 }
 
-double EnemyStrategy::evaluationFunction(Map &map) {
+double ExpectimaxStrategy::evaluationFunction(Map &map) {
     double totalScore = map.getEatedFoodByEnemy() * 10;
     Position enemyPosition = map.getEnemyPosition();
     set<Position> foodCells = map.getFoodCells();
@@ -83,24 +83,24 @@ double EnemyStrategy::evaluationFunction(Map &map) {
     return totalScore;
 }
 
-double EnemyStrategy::max(double v1, double v2) {
+double ExpectimaxStrategy::max(double v1, double v2) {
     return v1 > v2 ? v1 : v2;
 }
 
-double EnemyStrategy::min(double v1, double v2) {
+double ExpectimaxStrategy::min(double v1, double v2) {
     return v1 < v2 ? v1 : v2;
 }
 
-double EnemyStrategy::abs(double v1) {
+double ExpectimaxStrategy::abs(double v1) {
     return (v1 < 0) ? (v1 * -1) : v1;
 }
 
-Direction EnemyStrategy::getRandomDirection(list<Direction> directions) {
+Direction ExpectimaxStrategy::getRandomDirection(list<Direction> directions) {
     list<Direction>::iterator n = directions.begin();
     for (int i = 0, nrand = random() % directions.size(); i < nrand; i += 1, ++n) {}
     return *n;
 }
 
-double EnemyStrategy::minDistance(Position p1, Position p2) {
+double ExpectimaxStrategy::minDistance(Position p1, Position p2) {
     return abs(p1.row - p2.row) + abs(p1.col - p2.col);
 }

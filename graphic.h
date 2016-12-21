@@ -9,7 +9,8 @@ Copyright (C) 2016 Marc Sanchez
 #include "map.h"
 #include "particle.h"
 #include "tank_particle.h"
-#include "enemy_strategy.h"
+#include "strategy.h"
+#include "expectimax_strategy.h"
 #include <GL/glut.h>
 #include <string>
 
@@ -64,7 +65,7 @@ class Graphic {
     TankParticle playerParticle;
     TankParticle enemyParticle;
     long lastTime;
-    EnemyStrategy *enemyStrategy;
+    Strategy *enemyStrategy;
     int angleAlpha;
     int angleBeta;
 
