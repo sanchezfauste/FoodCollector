@@ -20,6 +20,11 @@ class Strategy {
     virtual Direction getAction() = 0;
     virtual ~Strategy();
 
+    static double max(double v1, double v2);
+    static double min(double v1, double v2);
+    static double abs(double v1);
+    static Direction getRandomDirection(list<Direction> directions);
+
 };
 
 #endif

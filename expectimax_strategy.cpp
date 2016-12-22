@@ -4,12 +4,8 @@ Copyright (C) 2016 Marc Sanchez
 */
 
 #include "expectimax_strategy.h"
-#include <stdlib.h>
-#include <ctime>
 
-ExpectimaxStrategy::ExpectimaxStrategy(Map *map) : Strategy(map) {
-    srand(time(NULL));
-}
+ExpectimaxStrategy::ExpectimaxStrategy(Map *map) : Strategy(map) {}
 
 Direction ExpectimaxStrategy::getAction() {
     return minimax_decision(2);
@@ -34,7 +30,7 @@ double ExpectimaxStrategy::max_value(Map map, CellType agent, int depth) {
     list<Direction> legalMoves = map.getLegalMoves(agent);
     double v = -30000000;
     for (list<Direction>::iterator a = legalMoves.begin(); a != legalMoves.end(); ++a) {
-        v = max(v, min_value(result(map, agent, *a), Player, depth));
+        v = Strategy::max(v, min_value(result(map, agent, *a), Player, depth));
     }
     return v;
 }
@@ -83,24 +79,6 @@ double ExpectimaxStrategy::evaluationFunction(Map &map) {
     return totalScore;
 }
 
-double ExpectimaxStrategy::max(double v1, double v2) {
-    return v1 > v2 ? v1 : v2;
-}
-
-double ExpectimaxStrategy::min(double v1, double v2) {
-    return v1 < v2 ? v1 : v2;
-}
-
-double ExpectimaxStrategy::abs(double v1) {
-    return (v1 < 0) ? (v1 * -1) : v1;
-}
-
-Direction ExpectimaxStrategy::getRandomDirection(list<Direction> directions) {
-    list<Direction>::iterator n = directions.begin();
-    for (int i = 0, nrand = random() % directions.size(); i < nrand; i += 1, ++n) {}
-    return *n;
-}
-
 double ExpectimaxStrategy::minDistance(Position p1, Position p2) {
-    return abs(p1.row - p2.row) + abs(p1.col - p2.col);
+    return Strategy::abs(p1.row - p2.row) + Strategy::abs(p1.col - p2.col);
 }

@@ -20,10 +20,6 @@ class ExpectimaxStrategy : public Strategy {
     double min_value(Map map, CellType agent, int depth);
     Direction minimax_decision(int depth);
     double evaluationFunction(Map &map);
-    double max(double v1, double v2);
-    double min(double v1, double v2);
-    double abs(double v1);
-    Direction getRandomDirection(list<Direction> directions);
     double minDistance(Position p1, Position p2);
 
   public:
