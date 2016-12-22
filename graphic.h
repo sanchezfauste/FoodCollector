@@ -20,7 +20,10 @@ typedef struct Color {
     const GLfloat red;
     const GLfloat green;
     const GLfloat blue;
-    Color(const GLfloat red, const GLfloat green, const GLfloat blue);
+    const GLfloat alpha;
+    Color(const GLfloat red, const GLfloat green, const GLfloat blue,
+        const GLfloat alpha = 1.0);
+    GLfloat * getArray();
 } Color;
 
 typedef struct Size {
@@ -44,13 +47,17 @@ void idle();
 class Graphic {
 
     static const Color backgroundColor;
-    static const Color foodColor;
-    static const Color playerColor;
-    static const Color enemyColor;
-    static const Color tankColor;
-    static const Color tankWeelsColor;
-    static const Color tankCanonColor;
-    static const Color textColor;
+    static const GLfloat* const foodColor;
+    static const GLfloat* const playerColor;
+    static const GLfloat* const enemyColor;
+    static const GLfloat* const tankColor;
+    static const GLfloat* const tankWeelsColor;
+    static const GLfloat* const tankCanonColor;
+    static const GLfloat* const textColor;
+    static const GLfloat* const fullColor;
+    static const GLfloat* const ambientColor;
+    static const GLfloat* const diffuseColor;
+    static const GLfloat* const specularColor;
     static const char* const gameTitle;
     static const Size scoreInfoPosition;
     static const double glutRatio;
@@ -73,7 +80,7 @@ class Graphic {
     Graphic(Graphic const&);
     void operator=(Graphic const&);
     void playerMove(Direction d);
-    void printPlayer(int row, int col, TankParticle &particle, Color color);
+    void printPlayer(int row, int col, TankParticle &particle, const GLfloat* color);
     void enemyMove(Direction d);
 
   public:
@@ -104,10 +111,12 @@ class Graphic {
     int getScreenHeight();
     void drawWall(int row, int col);
     void drawFood(int row, int col);
-    void drawTank(int row, int col, TankParticle &p, Color color);
-    void drawCylinder(Color color, Point p, GLdouble radius, GLdouble height);
-    void drawSphere(Color color, Point p, GLdouble radius);
-    void drawCube(Color color, Point p, GLfloat width, GLfloat height, GLfloat depth);
+    void drawTank(int row, int col, TankParticle &p, const GLfloat* color);
+    void drawCylinder(const GLfloat* color, Point p, GLdouble radius,
+            GLdouble height);
+    void drawSphere(const GLfloat* color, Point p, GLdouble radius);
+    void drawCube(const GLfloat* color, Point p, GLfloat width, GLfloat height,
+            GLfloat depth);
     void printText(float width, float height, string str);
     void printScore(float width, float height);
     void initDisplay();

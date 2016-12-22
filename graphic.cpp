@@ -11,14 +11,18 @@ Copyright (C) 2016 Marc Sanchez
 
 using namespace std;
 
-const Color Graphic::backgroundColor = Color(0.15, 0.15, 0.15);
-const Color Graphic::foodColor = Color(1.0, 0.64, 0);
-const Color Graphic::playerColor = Color(0.13, 0.54, 0.13);
-const Color Graphic::enemyColor = Color(0.7, 0.13, 0.13);
-const Color Graphic::textColor = Color(1.0, 1.0, 1.0);
-const Color Graphic::tankColor = Color(0, 0, 0);
-const Color Graphic::tankWeelsColor = Color(0.38, 0.38, 0.38);
-const Color Graphic::tankCanonColor = Color(0, 0, 0);
+const Color Graphic::backgroundColor = Color(0.15, 0.15, 0.15, 0.0);
+const GLfloat* const Graphic::foodColor = Color(1.0, 0.64, 0).getArray();
+const GLfloat* const Graphic::playerColor = Color(0.13, 0.54, 0.13).getArray();
+const GLfloat* const Graphic::enemyColor = Color(0.7, 0.13, 0.13).getArray();
+const GLfloat* const Graphic::textColor = Color(1.0, 1.0, 1.0).getArray();
+const GLfloat* const Graphic::tankColor = Color(0, 0, 0).getArray();
+const GLfloat* const Graphic::tankWeelsColor = Color(0.38, 0.38, 0.38).getArray();
+const GLfloat* const Graphic::tankCanonColor = Color(0, 0, 0).getArray();
+const GLfloat* const Graphic::fullColor = Color(1.0, 1.0, 1.0, 1.0).getArray();
+const GLfloat* const Graphic::ambientColor = Color(0.2, 0.2, 0.2, 1.0).getArray();
+const GLfloat* const Graphic::diffuseColor = Color(0.0, 0.0, 0.0, 1.0).getArray();
+const GLfloat* const Graphic::specularColor = Color(0.0, 0.0, 0.0, 1.0).getArray();
 const Size Graphic::scoreInfoPosition = Size(7.5, 7.5);
 const double Graphic::glutRatio = 1.1;
 const Direction Graphic::defaultPlayerTankDirection = Right;
@@ -39,8 +43,18 @@ const GLint Graphic::cylinderSlices = 10;
 const GLint Graphic::cylinderStacks = 10;
 const long Graphic::playerMovementTime = 150;
 
-Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue) :
-        red(red), green(green), blue(blue) {}
+Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue,
+        const GLfloat alpha) :
+        red(red), green(green), blue(blue), alpha(alpha) {}
+
+GLfloat * Color::getArray() {
+    GLfloat *color = (GLfloat*) malloc(sizeof(GLfloat) * 4);
+    color[0] = red;
+    color[1] = green;
+    color[2] = blue;
+    color[3] = alpha;
+    return color;
+}
 
 Size::Size(const float width, const float height) : width(width), height(height){}
 
@@ -86,6 +100,7 @@ void Graphic::setGlutDimensions(int width, int height) {
     glutCreateWindow(Graphic::gameTitle);
     glMatrixMode(GL_PROJECTION);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
     glOrtho(-glutWidth/2, glutWidth/2, -glutHeight/2, glutHeight/2, 10, 2000);
 }
 
@@ -139,8 +154,7 @@ void Graphic::glutDisplay() {
 void Graphic::printText(float width, float height, string str) {
     glPushMatrix();
     glTranslatef(width, height, Graphic::cellDepth/2 + 1);
-    glColor3f(Graphic::textColor.red, Graphic::textColor.green,
-            Graphic::textColor.blue);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Graphic::textColor);
     double scale = (double) Graphic::cellWidth/3 / glutStrokeWidth(GLUT_STROKE_ROMAN, 'A');
     glScalef(scale, scale, 0);
     for (int i = 0; i < (int) str.size(); i++) {
@@ -156,7 +170,8 @@ void Graphic::printScore(float width, float height) {
     printText(-this->width/2 + width, -this->height/2 + height, convert.str());
 }
 
-void Graphic::printPlayer(int row, int col, TankParticle &particle, Color color) {
+void Graphic::printPlayer(int row, int col, TankParticle &particle,
+        const GLfloat* color) {
     drawTank(row, col, particle, color);
 }
 
@@ -281,6 +296,7 @@ void Graphic::drawFloor(int row, int col) {
     int z1 = z/2;
 
     glEnable(GL_TEXTURE_2D);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Graphic::fullColor);
     glBindTexture(GL_TEXTURE_2D, Water);
     glBegin(GL_QUADS);
     glTexCoord2f(2.0, 2.0);
@@ -304,6 +320,7 @@ void Graphic::drawWall(int row, int col) {
     int z1 = z/2;
 
     glEnable(GL_TEXTURE_2D);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Graphic::fullColor);
     glBindTexture(GL_TEXTURE_2D, Grass);
     glBegin(GL_QUADS);
     glTexCoord2f(2.0, 2.0);
@@ -328,7 +345,6 @@ void Graphic::drawWall(int row, int col) {
     glVertex3i(x + x1, y - y1, z1 - 1);
     glEnd();
 
-    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
     glTexCoord2f(2.0, -2.0);
@@ -341,7 +357,6 @@ void Graphic::drawWall(int row, int col) {
     glVertex3i(x + x1, y + y1, -z1);
     glEnd();
 
-    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
     glTexCoord2f(-2.0, 0.5);
@@ -354,7 +369,6 @@ void Graphic::drawWall(int row, int col) {
     glVertex3i(x + x1, y + y1, z1 - 1);
     glEnd();
 
-    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
     glTexCoord2f(2.0, 0.5);
@@ -367,7 +381,6 @@ void Graphic::drawWall(int row, int col) {
     glVertex3i(x - x1, y - y1, z1 - 1);
     glEnd();
 
-    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
     glTexCoord2f(-2.0, -0.5);
@@ -380,7 +393,6 @@ void Graphic::drawWall(int row, int col) {
     glVertex3i(x + x1, y + y1, -z1);
     glEnd();
 
-    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
     glTexCoord2f(2.0, -0.5);
@@ -400,14 +412,13 @@ void Graphic::drawFood(int row, int col) {
     int y = (row + 0.5) * Graphic::cellHeight - this->height/2;
     glPushMatrix();
         glTranslatef(x, y, 0);
-        glColor3f(Graphic::foodColor.red, Graphic::foodColor.green,
-            Graphic::foodColor.blue);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Graphic::foodColor);
         glutSolidSphere(Graphic::foodRadius, Graphic::sphereSlices,
             Graphic::sphereStacks);
     glPopMatrix ();
 }
 
-void Graphic::drawTank(int row, int col, TankParticle &p, Color color) {
+void Graphic::drawTank(int row, int col, TankParticle &p, const GLfloat* color) {
     GLfloat widthTranslation = 0;
     GLfloat heightTranslation = 0;
     if (p.getState() != Quiet) {
@@ -447,9 +458,10 @@ void Graphic::drawTank(int row, int col, TankParticle &p, Color color) {
     glPopMatrix ();
 }
 
-void Graphic::drawCylinder(Color color, Point p, GLdouble radius, GLdouble height) {
+void Graphic::drawCylinder(const GLfloat* color, Point p, GLdouble radius,
+        GLdouble height) {
     glPushMatrix();
-        glColor3f(color.red, color.green, color.blue);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
         glRotatef(-90, 1, 0, 0);
         glTranslatef(p.x, p.y, p.z);
         gluCylinder(gluNewQuadric(), radius, radius, height,
@@ -457,20 +469,21 @@ void Graphic::drawCylinder(Color color, Point p, GLdouble radius, GLdouble heigh
     glPopMatrix ();
 }
 
-void Graphic::drawSphere(Color color, Point p, GLdouble radius) {
+void Graphic::drawSphere(const GLfloat* color, Point p, GLdouble radius) {
     glPushMatrix();
         glTranslatef(p.x, p.y, p.z);
-        glColor3f(color.red, color.green, color.blue);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
         glutSolidSphere(radius, Graphic::sphereSlices, Graphic::sphereStacks);
     glPopMatrix ();
 }
 
-void Graphic::drawCube(Color color, Point p, GLfloat width, GLfloat height, GLfloat depth) {
+void Graphic::drawCube(const GLfloat* color, Point p, GLfloat width,
+        GLfloat height, GLfloat depth) {
     GLfloat x1 = width/2;
     GLfloat y1 = height/2;
     GLfloat z1 = depth/2;
 
-    glColor3f(color.red, color.green, color.blue);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
     glVertex3f(p.x + x1, p.y + y1, p.z + z1);
     glVertex3f(p.x - x1, p.y + y1, p.z + z1);
@@ -478,7 +491,7 @@ void Graphic::drawCube(Color color, Point p, GLfloat width, GLfloat height, GLfl
     glVertex3f(p.x + x1, p.y - y1, p.z + z1);
     glEnd();
 
-    glColor3f(color.red, color.green, color.blue);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
     glVertex3f(p.x + x1, p.y + y1, p.z + z1 - 1);
     glVertex3f(p.x - x1, p.y + y1, p.z + z1 - 1);
@@ -486,7 +499,7 @@ void Graphic::drawCube(Color color, Point p, GLfloat width, GLfloat height, GLfl
     glVertex3f(p.x + x1, p.y - y1, p.z + z1 - 1);
     glEnd();
 
-    glColor3f(color.red, color.green, color.blue);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
     glVertex3f(p.x + x1, p.y - y1, p.z + -z1);
     glVertex3f(p.x - x1, p.y - y1, p.z + -z1);
@@ -494,7 +507,7 @@ void Graphic::drawCube(Color color, Point p, GLfloat width, GLfloat height, GLfl
     glVertex3f(p.x + x1, p.y + y1, p.z + -z1);
     glEnd();
 
-    glColor3f(color.red, color.green, color.blue);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
     glVertex3f(p.x + x1, p.y - y1, p.z + z1 - 1);
     glVertex3f(p.x + x1, p.y - y1, p.z + -z1);
@@ -502,7 +515,7 @@ void Graphic::drawCube(Color color, Point p, GLfloat width, GLfloat height, GLfl
     glVertex3f(p.x + x1, p.y + y1, p.z + z1 - 1);
     glEnd();
 
-    glColor3f(color.red, color.green, color.blue);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
     glVertex3f(p.x - x1, p.y + y1, p.z + z1 - 1);
     glVertex3f(p.x - x1, p.y + y1, p.z + -z1);
@@ -510,7 +523,7 @@ void Graphic::drawCube(Color color, Point p, GLfloat width, GLfloat height, GLfl
     glVertex3f(p.x - x1, p.y - y1, p.z + z1 - 1);
     glEnd();
 
-    glColor3f(color.red, color.green, color.blue);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
     glVertex3f(p.x - x1, p.y + y1, p.z + -z1);
     glVertex3f(p.x - x1, p.y + y1, p.z + z1 - 1);
@@ -518,7 +531,7 @@ void Graphic::drawCube(Color color, Point p, GLfloat width, GLfloat height, GLfl
     glVertex3f(p.x + x1, p.y + y1, p.z + -z1);
     glEnd();
 
-    glColor3f(color.red, color.green, color.blue);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
     glVertex3f(p.x + x1, p.y - y1, p.z + -z1);
     glVertex3f(p.x + x1, p.y - y1, p.z + z1 - 1);
@@ -564,13 +577,25 @@ void Graphic::glutIdle() {
 
 void Graphic::initDisplay() {
     glClearColor(Graphic::backgroundColor.red, Graphic::backgroundColor.green,
-            Graphic::backgroundColor.blue, 0.0);
+            Graphic::backgroundColor.blue, Graphic::backgroundColor.alpha);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     positionObserver(angleAlpha, angleBeta, 450);
     glPolygonMode(GL_FRONT, GL_FILL);
     glPolygonMode(GL_BACK, GL_LINE);
+
+    GLint position[4];
+    position[0] = 0;
+    position[1] = 0;
+    position[2] = width;
+    position[3] = 2 * width;
+
+    glLightiv(GL_LIGHT0, GL_POSITION, position);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, Graphic::ambientColor);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, Graphic::diffuseColor);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, Graphic::specularColor);
+    glEnable(GL_LIGHT0);
 }
 
 void Graphic::positionObserver(float alpha, float beta, int radius) {
