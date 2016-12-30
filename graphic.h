@@ -58,6 +58,7 @@ class Graphic {
     static const GLfloat* const ambientColor;
     static const GLfloat* const diffuseColor;
     static const GLfloat* const specularColor;
+    static const GLfloat* const bulletColor;
     static const char* const gameTitle;
     static const Size scoreInfoPosition;
     static const double glutRatio;
@@ -71,6 +72,8 @@ class Graphic {
     int glutHeight;
     TankParticle playerParticle;
     TankParticle enemyParticle;
+    Particle bulletParticle;
+    Position *bulletPosition;
     long lastTime;
     Strategy *enemyStrategy;
     int angleAlpha;
@@ -81,6 +84,8 @@ class Graphic {
     void operator=(Graphic const&);
     void playerMove(Direction d);
     void printPlayer(int row, int col, TankParticle &particle, const GLfloat* color);
+    void printBullet(int row, int col, Particle &particle, const GLfloat* color);
+    void tankShoot();
     void enemyMove(Direction d);
 
   public:
@@ -96,6 +101,7 @@ class Graphic {
     static const GLint cylinderSlices;
     static const GLint cylinderStacks;
     static const long playerMovementTime;
+    static const long bulletMovementTime;
 
     static Graphic& getInstance();
     static Size getTranslation(Direction d);

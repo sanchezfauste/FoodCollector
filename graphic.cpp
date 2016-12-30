@@ -23,6 +23,7 @@ const GLfloat* const Graphic::fullColor = Color(1.0, 1.0, 1.0, 1.0).getArray();
 const GLfloat* const Graphic::ambientColor = Color(0.2, 0.2, 0.2, 1.0).getArray();
 const GLfloat* const Graphic::diffuseColor = Color(0.0, 0.0, 0.0, 1.0).getArray();
 const GLfloat* const Graphic::specularColor = Color(0.0, 0.0, 0.0, 1.0).getArray();
+const GLfloat* const Graphic::bulletColor = Color(0, 0, 0).getArray();
 const Size Graphic::scoreInfoPosition = Size(7.5, 7.5);
 const double Graphic::glutRatio = 1.1;
 const Direction Graphic::defaultPlayerTankDirection = Right;
@@ -41,7 +42,8 @@ const GLint Graphic::sphereSlices = 10;
 const GLint Graphic::sphereStacks = 10;
 const GLint Graphic::cylinderSlices = 10;
 const GLint Graphic::cylinderStacks = 10;
-const long Graphic::playerMovementTime = 150;
+const long Graphic::playerMovementTime = 200;
+const long Graphic::bulletMovementTime = 75;
 
 Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue,
         const GLfloat alpha) :
@@ -62,7 +64,9 @@ Point::Point(const GLfloat x, const GLfloat y, const GLfloat z) : x(x), y(y), z(
 
 Graphic::Graphic() : playerParticle(TankParticle(Graphic::defaultPlayerTankDirection)),
         enemyParticle(TankParticle(Graphic::defaultEnemyTankDirection)),
-        enemyStrategy(NULL), angleAlpha(270), angleBeta(60){}
+        bulletParticle(), enemyStrategy(NULL), angleAlpha(270), angleBeta(60){
+    bulletPosition = new Position();
+}
 
 Graphic& Graphic::getInstance() {
     static Graphic instance;
@@ -80,6 +84,7 @@ void Graphic::setMap(Map& map) {
     playerParticle.setTankOrientation(Graphic::defaultPlayerTankDirection);
     enemyParticle.setState(Quiet);
     enemyParticle.setTankOrientation(Graphic::defaultEnemyTankDirection);
+    bulletParticle.setState(Quiet);
 }
 
 int Graphic::getScreenWidth() {
@@ -147,8 +152,38 @@ void Graphic::glutDisplay() {
             playerParticle, Graphic::playerColor);
     printPlayer(map->getNumberOfRows()-1-enemyPos.row, enemyPos.col,
             enemyParticle, Graphic::enemyColor);
+    if (bulletParticle.getState() == Moving) {
+        printBullet(map->getNumberOfRows()-1-bulletPosition->row,
+            bulletPosition->col, bulletParticle, Graphic::bulletColor);
+    }
     printScore(Graphic::scoreInfoPosition.width, Graphic::scoreInfoPosition.height);
     glutSwapBuffers();
+}
+
+void Graphic::tankShoot() {
+    Direction d = playerParticle.getTankOrientation();
+    if (bulletParticle.getState() == Quiet && !playerParticle.isRotating()
+            && map->playerCanMoveTo(d)) {
+        Position playerPos = map->getPlayerPosition();
+        Size translation = Graphic::getTranslation(d);
+        delete(bulletPosition);
+        bulletPosition = new Position(playerPos.row, playerPos.col);
+        bulletParticle.initMovement(translation.width, translation.height,
+            Graphic::bulletMovementTime, d);
+    }
+}
+
+void Graphic::printBullet(int row, int col, Particle &particle, const GLfloat* color) {
+    GLfloat widthTranslation = 0;
+    GLfloat heightTranslation = 0;
+    if (particle.getState() == Moving) {
+        widthTranslation = particle.getCurrentWidthTranslation();
+        heightTranslation = particle.getCurrentHeightTranslation();
+    }
+    GLfloat x = (col + 0.5) * Graphic::cellWidth - this->width/2 + widthTranslation;
+    GLfloat y = (row + 0.5) * Graphic::cellHeight - this->height/2 + heightTranslation;
+    GLfloat z = 7.25;
+    drawSphere(color, Point(x, y, z), 2);
 }
 
 void Graphic::printText(float width, float height, string str) {
@@ -200,6 +235,9 @@ void Graphic::glutKeyboard(unsigned char key, int x, int y) {
             break;
         case 'l':
             angleAlpha = (angleAlpha - 3 + 360) % 360;
+            break;
+        case ' ':
+            tankShoot();
             break;
         default:
             Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
@@ -568,6 +606,23 @@ void Graphic::glutIdle() {
             if (map->enemyCanMoveTo(d)) {
                 Size translation = Graphic::getTranslation(d);
                 enemyParticle.initMovement(translation.width, translation.height, d);
+            }
+        }
+        if (bulletParticle.getState() == Moving) {
+            if (bulletParticle.integrate(elapsedTime)) {
+                Direction d = bulletParticle.getDirection();
+                Position bulletPos = map->getNeighborPosition(*bulletPosition, d);
+                delete(bulletPosition);
+                bulletPosition = new Position(bulletPos.row, bulletPos.col);
+                Position newBulletPos = map->getNeighborPosition(*bulletPosition, d);
+                if (map->getEnemyPosition() == bulletPos) {
+                    map->shootEnemy();
+                    enemyParticle.setState(Quiet);
+                }else if (map->getPositionCellType(newBulletPos) != Wall) {
+                    Size translation = Graphic::getTranslation(d);
+                    bulletParticle.initMovement(translation.width, translation.height,
+                        Graphic::bulletMovementTime, d);
+                }
             }
         }
         lastTime = t;

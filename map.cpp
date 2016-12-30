@@ -20,6 +20,10 @@ bool Position::operator<(const Position &p) const {
     return (row == p.row) ? col < p.col : row < p.row;
 }
 
+bool Position::operator==(const Position &p) const {
+    return row == p.row && col == p.col;
+}
+
 Map::Map(const int nRows, const int nCols) : nRows(nRows), nCols(nCols),
         eatedFoodByPlayer(0), eatedFoodByEnemy(0),
         playerInitialPosition(Position(1, 1)),
@@ -362,4 +366,8 @@ Map::Map(const Map &m) : nRows(m.nRows), nCols(m.nCols),
 
 set<Position> Map::getFoodCells() {
     return foodCells;
+}
+
+void Map::shootEnemy() {
+    setEnemyPosition(enemyInitialPosition);
 }

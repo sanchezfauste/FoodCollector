@@ -108,3 +108,11 @@ void TankParticle::setTankOrientation(Direction orientation) {
     tankRotationDegrees = orientation * 90;
     tankOrientation = orientation;
 }
+
+Direction TankParticle::getTankOrientation() {
+    return tankOrientation;
+}
+
+bool TankParticle::isRotating() {
+    return rotating;
+}

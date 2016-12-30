@@ -34,6 +34,7 @@ typedef struct Position {
     Position(const int row, const int col);
     Position();
     bool operator<(const Position &p) const;
+    bool operator==(const Position &p) const;
 } Position;
 
 class Map {
@@ -98,6 +99,7 @@ class Map {
     bool isFoodAvailable();
     Map generateSuccessor(CellType agent, Direction action);
     set<Position> getFoodCells();
+    void shootEnemy();
 
 };
 

@@ -49,6 +49,8 @@ class TankParticle {
     void setState(State state);
     Direction getDirection();
     void setTankOrientation(Direction orientation);
+    Direction getTankOrientation();
+    bool isRotating();
 
 };
 
