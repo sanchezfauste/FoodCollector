@@ -54,6 +54,7 @@ class Graphic {
     static const GLfloat* const tankWeelsColor;
     static const GLfloat* const tankCanonColor;
     static const GLfloat* const textColor;
+    static const GLfloat* const headlightColor; 
     static const GLfloat* const fullColor;
     static const GLfloat* const ambientColor;
     static const GLfloat* const diffuseColor;

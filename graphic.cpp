@@ -17,6 +17,7 @@ const GLfloat* const Graphic::playerColor = Color(0.13, 0.54, 0.13).getArray();
 const GLfloat* const Graphic::enemyColor = Color(0.7, 0.13, 0.13).getArray();
 const GLfloat* const Graphic::textColor = Color(1.0, 1.0, 1.0).getArray();
 const GLfloat* const Graphic::tankColor = Color(0, 0, 0).getArray();
+const GLfloat* const Graphic::headlightColor = Color(1, 1, 1).getArray(); 
 const GLfloat* const Graphic::tankWeelsColor = Color(0.38, 0.38, 0.38).getArray();
 const GLfloat* const Graphic::tankCanonColor = Color(0, 0, 0).getArray();
 const GLfloat* const Graphic::fullColor = Color(1.0, 1.0, 1.0, 1.0).getArray();
@@ -493,6 +494,11 @@ void Graphic::drawTank(int row, int col, TankParticle &p, const GLfloat* color) 
         drawSphere(Graphic::tankWeelsColor, Point(-110, -40, 0), 20);
         drawSphere(Graphic::tankWeelsColor, Point(-110, 90, 0), 20);
         drawSphere(Graphic::tankWeelsColor, Point(-110, -90, 0), 20);
+
+	//Tank lights
+	drawCube(Graphic::headlightColor, Point(-45, 77, 25), 35, 5, 35);
+    	drawCube(Graphic::headlightColor, Point( 45, 77, 25), 35, 5, 35);
+
     glPopMatrix ();
 }
 
