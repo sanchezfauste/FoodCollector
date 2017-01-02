@@ -338,6 +338,7 @@ void Graphic::drawFloor(int row, int col) {
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Graphic::fullColor);
     glBindTexture(GL_TEXTURE_2D, Water);
     glBegin(GL_QUADS);
+    glNormal3f(0,0,1);
     glTexCoord2f(2.0, 2.0);
     glVertex3i(x + x1, y + y1, -z1);
     glTexCoord2f(-2.0, 2.0);
@@ -362,6 +363,7 @@ void Graphic::drawWall(int row, int col) {
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Graphic::fullColor);
     glBindTexture(GL_TEXTURE_2D, Grass);
     glBegin(GL_QUADS);
+    glNormal3f(0,0,1);
     glTexCoord2f(2.0, 2.0);
     glVertex3i(x + x1, y + y1, z1);
     glTexCoord2f(-2.0, 2.0);
@@ -374,6 +376,7 @@ void Graphic::drawWall(int row, int col) {
 
     glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
+    glNormal3f(0,0,1);
     glTexCoord2f(2.0, 2.0);
     glVertex3i(x + x1, y + y1, z1 - 1);
     glTexCoord2f(-2.0, 2.0);
@@ -386,6 +389,7 @@ void Graphic::drawWall(int row, int col) {
 
     glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
+    glNormal3f(0,0,-1);
     glTexCoord2f(2.0, -2.0);
     glVertex3i(x + x1, y - y1, -z1);
     glTexCoord2f(-2.0, -2.0);
@@ -398,6 +402,7 @@ void Graphic::drawWall(int row, int col) {
 
     glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
+    glNormal3f(1,0,0);
     glTexCoord2f(-2.0, 0.5);
     glVertex3i(x + x1, y - y1, z1 - 1);
     glTexCoord2f(-2.0, -0.5);
@@ -410,6 +415,7 @@ void Graphic::drawWall(int row, int col) {
 
     glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
+    glNormal3f(-1,0,0);
     glTexCoord2f(2.0, 0.5);
     glVertex3i(x - x1, y + y1, z1 - 1);
     glTexCoord2f(2.0, -0.5);
@@ -422,6 +428,7 @@ void Graphic::drawWall(int row, int col) {
 
     glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
+    glNormal3f(0,1,0);
     glTexCoord2f(-2.0, -0.5);
     glVertex3i(x - x1, y + y1, -z1);
     glTexCoord2f(-2.0, 0.5);
@@ -434,6 +441,7 @@ void Graphic::drawWall(int row, int col) {
 
     glBindTexture(GL_TEXTURE_2D, Edge);
     glBegin(GL_QUADS);
+    glNormal3f(0,-1,0);
     glTexCoord2f(2.0, -0.5);
     glVertex3i(x + x1, y - y1, -z1);
     glTexCoord2f(2.0, 0.5);
@@ -529,6 +537,7 @@ void Graphic::drawCube(const GLfloat* color, Point p, GLfloat width,
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
+    glNormal3f(0,0,1);
     glVertex3f(p.x + x1, p.y + y1, p.z + z1);
     glVertex3f(p.x - x1, p.y + y1, p.z + z1);
     glVertex3f(p.x - x1, p.y - y1, p.z + z1);
@@ -537,6 +546,7 @@ void Graphic::drawCube(const GLfloat* color, Point p, GLfloat width,
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
+    glNormal3f(0,0,1);
     glVertex3f(p.x + x1, p.y + y1, p.z + z1 - 1);
     glVertex3f(p.x - x1, p.y + y1, p.z + z1 - 1);
     glVertex3f(p.x - x1, p.y - y1, p.z + z1 - 1);
@@ -545,6 +555,7 @@ void Graphic::drawCube(const GLfloat* color, Point p, GLfloat width,
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
+    glNormal3f(0,0,-1);
     glVertex3f(p.x + x1, p.y - y1, p.z + -z1);
     glVertex3f(p.x - x1, p.y - y1, p.z + -z1);
     glVertex3f(p.x - x1, p.y + y1, p.z + -z1);
@@ -553,6 +564,7 @@ void Graphic::drawCube(const GLfloat* color, Point p, GLfloat width,
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
+    glNormal3f(1,0,0);
     glVertex3f(p.x + x1, p.y - y1, p.z + z1 - 1);
     glVertex3f(p.x + x1, p.y - y1, p.z + -z1);
     glVertex3f(p.x + x1, p.y + y1, p.z + -z1);
@@ -561,6 +573,7 @@ void Graphic::drawCube(const GLfloat* color, Point p, GLfloat width,
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
+    glNormal3f(-1,0,0);
     glVertex3f(p.x - x1, p.y + y1, p.z + z1 - 1);
     glVertex3f(p.x - x1, p.y + y1, p.z + -z1);
     glVertex3f(p.x - x1, p.y - y1, p.z + -z1);
@@ -569,6 +582,7 @@ void Graphic::drawCube(const GLfloat* color, Point p, GLfloat width,
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
+    glNormal3f(0,1,0);
     glVertex3f(p.x - x1, p.y + y1, p.z + -z1);
     glVertex3f(p.x - x1, p.y + y1, p.z + z1 - 1);
     glVertex3f(p.x + x1, p.y + y1, p.z + z1 - 1);
@@ -577,6 +591,7 @@ void Graphic::drawCube(const GLfloat* color, Point p, GLfloat width,
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
     glBegin(GL_QUADS);
+    glNormal3f(0,-1,0);
     glVertex3f(p.x + x1, p.y - y1, p.z + -z1);
     glVertex3f(p.x + x1, p.y - y1, p.z + z1 - 1);
     glVertex3f(p.x - x1, p.y - y1, p.z + z1 - 1);
