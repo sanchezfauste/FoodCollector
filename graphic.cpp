@@ -25,6 +25,7 @@ const GLfloat* const Graphic::ambientColor = Color(0.2, 0.2, 0.2, 1.0).getArray(
 const GLfloat* const Graphic::diffuseColor = Color(0.0, 0.0, 0.0, 1.0).getArray();
 const GLfloat* const Graphic::specularColor = Color(0.0, 0.0, 0.0, 1.0).getArray();
 const GLfloat* const Graphic::bulletColor = Color(0, 0, 0).getArray();
+const GLfloat* const Graphic::spotLightColor = Color(0.7, 0.7, 0.7, 1).getArray();
 const Size Graphic::scoreInfoPosition = Size(7.5, 7.5);
 const double Graphic::glutRatio = 1.1;
 const Direction Graphic::defaultPlayerTankDirection = Right;
@@ -150,9 +151,9 @@ void Graphic::glutDisplay() {
     Position playerPos = map->getPlayerPosition();
     Position enemyPos = map->getEnemyPosition();
     printPlayer(map->getNumberOfRows()-1-playerPos.row, playerPos.col,
-            playerParticle, Graphic::playerColor);
+            playerParticle, Graphic::playerColor, Player);
     printPlayer(map->getNumberOfRows()-1-enemyPos.row, enemyPos.col,
-            enemyParticle, Graphic::enemyColor);
+            enemyParticle, Graphic::enemyColor, Enemy);
     if (bulletParticle.getState() == Moving) {
         printBullet(map->getNumberOfRows()-1-bulletPosition->row,
             bulletPosition->col, bulletParticle, Graphic::bulletColor);
@@ -188,6 +189,7 @@ void Graphic::printBullet(int row, int col, Particle &particle, const GLfloat* c
 }
 
 void Graphic::printText(float width, float height, string str) {
+    glDisable(GL_LIGHTING);
     glPushMatrix();
     glTranslatef(width, height, Graphic::cellDepth/2 + 1);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Graphic::textColor);
@@ -197,6 +199,7 @@ void Graphic::printText(float width, float height, string str) {
         glutStrokeCharacter(GLUT_STROKE_ROMAN, str[i]);
     }
     glPopMatrix();
+    glEnable(GL_LIGHTING);
 }
 
 void Graphic::printScore(float width, float height) {
@@ -207,8 +210,8 @@ void Graphic::printScore(float width, float height) {
 }
 
 void Graphic::printPlayer(int row, int col, TankParticle &particle,
-        const GLfloat* color) {
-    drawTank(row, col, particle, color);
+        const GLfloat* color, CellType player) {
+    drawTank(row, col, particle, color, player);
 }
 
 void Graphic::glutKeyboard(unsigned char key, int x, int y) {
@@ -465,7 +468,8 @@ void Graphic::drawFood(int row, int col) {
     glPopMatrix ();
 }
 
-void Graphic::drawTank(int row, int col, TankParticle &p, const GLfloat* color) {
+void Graphic::drawTank(int row, int col, TankParticle &p, const GLfloat* color,
+        CellType player) {
     GLfloat widthTranslation = 0;
     GLfloat heightTranslation = 0;
     if (p.getState() != Quiet) {
@@ -503,11 +507,34 @@ void Graphic::drawTank(int row, int col, TankParticle &p, const GLfloat* color) 
         drawSphere(Graphic::tankWeelsColor, Point(-110, 90, 0), 20);
         drawSphere(Graphic::tankWeelsColor, Point(-110, -90, 0), 20);
 
-	//Tank lights
-	drawCube(Graphic::headlightColor, Point(-45, 77, 25), 35, 5, 35);
-    	drawCube(Graphic::headlightColor, Point( 45, 77, 25), 35, 5, 35);
+        //Tank lights
+        drawCube(Graphic::headlightColor, Point(-45, 77, 25), 35, 5, 35);
+        drawCube(Graphic::headlightColor, Point( 45, 77, 25), 35, 5, 35);
+        if (player == Player) {
+            setSpotLight(GL_LIGHT1, Point(-45, 77, 25), Graphic::spotLightColor);
+            setSpotLight(GL_LIGHT2, Point( 45, 77, 25), Graphic::spotLightColor);
+        } else if (player == Enemy) {
+            setSpotLight(GL_LIGHT3, Point(-45, 77, 25), Graphic::spotLightColor);
+            setSpotLight(GL_LIGHT4, Point( 45, 77, 25), Graphic::spotLightColor);
+        }
 
     glPopMatrix ();
+}
+
+void Graphic::setSpotLight(GLenum light, Point p, const GLfloat* color) {
+    GLint position[4];
+    position[0] = p.x;
+    position[1] = p.y;
+    position[2] = p.z;
+    position[3] = 1;
+    glLightiv(light, GL_POSITION, position);
+    glLightfv(light, GL_DIFFUSE, color);
+    glLightf(light, GL_CONSTANT_ATTENUATION, 1.0);
+    glLightf(light, GL_LINEAR_ATTENUATION, 0.0);
+    glLightf(light, GL_QUADRATIC_ATTENUATION, 0.0);
+    glLightf(light, GL_SPOT_CUTOFF, 180.0);
+    glLightf(light, GL_SPOT_EXPONENT, 0);
+    glEnable(light);
 }
 
 void Graphic::drawCylinder(const GLfloat* color, Point p, GLdouble radius,

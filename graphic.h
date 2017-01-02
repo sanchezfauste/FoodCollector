@@ -60,6 +60,7 @@ class Graphic {
     static const GLfloat* const diffuseColor;
     static const GLfloat* const specularColor;
     static const GLfloat* const bulletColor;
+    static const GLfloat* const spotLightColor;
     static const char* const gameTitle;
     static const Size scoreInfoPosition;
     static const double glutRatio;
@@ -84,7 +85,8 @@ class Graphic {
     Graphic(Graphic const&);
     void operator=(Graphic const&);
     void playerMove(Direction d);
-    void printPlayer(int row, int col, TankParticle &particle, const GLfloat* color);
+    void printPlayer(int row, int col, TankParticle &particle,
+            const GLfloat* color, CellType player);
     void printBullet(int row, int col, Particle &particle, const GLfloat* color);
     void tankShoot();
     void enemyMove(Direction d);
@@ -118,7 +120,8 @@ class Graphic {
     int getScreenHeight();
     void drawWall(int row, int col);
     void drawFood(int row, int col);
-    void drawTank(int row, int col, TankParticle &p, const GLfloat* color);
+    void drawTank(int row, int col, TankParticle &p, const GLfloat* color,
+            CellType player);
     void drawCylinder(const GLfloat* color, Point p, GLdouble radius,
             GLdouble height);
     void drawSphere(const GLfloat* color, Point p, GLdouble radius);
@@ -129,6 +132,7 @@ class Graphic {
     void initDisplay();
     void positionObserver(float alpha, float beta, int radius);
     void drawFloor(int row, int col);
+    void setSpotLight(GLenum light, Point p, const GLfloat* color);
 
 };
 
