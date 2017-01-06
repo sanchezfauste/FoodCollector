@@ -508,8 +508,10 @@ void Graphic::drawTank(int row, int col, TankParticle &p, const GLfloat* color,
         drawSphere(Graphic::tankWeelsColor, Point(-110, -90, 0), 20);
 
         //Tank lights
+        glDisable(GL_LIGHTING);
         drawCube(Graphic::headlightColor, Point(-45, 77, 25), 35, 5, 35);
         drawCube(Graphic::headlightColor, Point( 45, 77, 25), 35, 5, 35);
+        glEnable(GL_LIGHTING);
         if (player == Player) {
             setSpotLight(GL_LIGHT1, Point(-45, 77, 25), Graphic::spotLightColor);
             setSpotLight(GL_LIGHT2, Point( 45, 77, 25), Graphic::spotLightColor);
@@ -527,12 +529,17 @@ void Graphic::setSpotLight(GLenum light, Point p, const GLfloat* color) {
     position[1] = p.y;
     position[2] = p.z;
     position[3] = 1;
+    GLfloat direction[3];
+    direction[0] = 0;
+    direction[1] = 1;
+    direction[2] = 0;
     glLightiv(light, GL_POSITION, position);
     glLightfv(light, GL_DIFFUSE, color);
     glLightf(light, GL_CONSTANT_ATTENUATION, 1.0);
     glLightf(light, GL_LINEAR_ATTENUATION, 0.0);
     glLightf(light, GL_QUADRATIC_ATTENUATION, 0.0);
-    glLightf(light, GL_SPOT_CUTOFF, 180.0);
+    glLightf(light, GL_SPOT_CUTOFF, 30);
+    glLightfv(light, GL_SPOT_DIRECTION, direction);
     glLightf(light, GL_SPOT_EXPONENT, 0);
     glEnable(light);
 }
