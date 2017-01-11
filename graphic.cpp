@@ -243,7 +243,7 @@ void Graphic::glutKeyboard(unsigned char key, int x, int y) {
         case ' ':
             tankShoot();
             break;
-        default:
+        case 'r':
             Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
             setMap(m);
             break;
