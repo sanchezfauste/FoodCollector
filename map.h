@@ -25,7 +25,7 @@ enum Direction {
     Right = 1,
     Down = 2,
     Left = 3,
-    None
+    None = 4
 };
 
 typedef struct Position {
