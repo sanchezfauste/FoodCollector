@@ -74,6 +74,7 @@ Graphic::Graphic() : playerParticle(TankParticle(Graphic::defaultPlayerTankDirec
             exit(1);
         }
         waterTexture = WaterYellow;
+        speedFactor = 1.0;
     #endif
 }
 
@@ -178,7 +179,12 @@ void Graphic::tankShoot() {
         delete(bulletPosition);
         bulletPosition = new Position(playerPos.row, playerPos.col);
         bulletParticle.initMovement(translation.width, translation.height,
-            Graphic::bulletMovementTime, d);
+            #ifdef ARDUINO
+                Graphic::bulletMovementTime * speedFactor
+            #else
+                Graphic::bulletMovementTime
+            #endif
+            , d);
     }
 }
 
@@ -282,7 +288,11 @@ void Graphic::playerMove(Direction d) {
         if (map->playerCanMoveTo(d) && d != None) {
             map->setCurrentPlayerDirection(d);
             Size translation = Graphic::getTranslation(d);
-            playerParticle.initMovement(translation.width, translation.height, d);
+            playerParticle.initMovement(translation.width, translation.height, d
+                    #ifdef ARDUINO
+                        , speedFactor
+                    #endif
+                    );
         }
     } else {
         map->setNextPlayerDirection(d);
@@ -293,7 +303,11 @@ void Graphic::enemyMove(Direction d) {
     if (enemyParticle.getState() != Moving) {
         if (map->enemyCanMoveTo(d) && d != None) {
             Size translation = Graphic::getTranslation(d);
-            enemyParticle.initMovement(translation.width, translation.height, d);
+            enemyParticle.initMovement(translation.width, translation.height, d
+                    #ifdef ARDUINO
+                        , speedFactor
+                    #endif
+                    );
         }
     }
 }
@@ -674,7 +688,11 @@ void Graphic::glutIdle() {
             Direction d = enemyStrategy->getAction();
             if (map->enemyCanMoveTo(d)) {
                 Size translation = Graphic::getTranslation(d);
-                enemyParticle.initMovement(translation.width, translation.height, d);
+                enemyParticle.initMovement(translation.width, translation.height, d
+                        #ifdef ARDUINO
+                            , speedFactor
+                        #endif
+                        );
             }
         }
         if (bulletParticle.getState() == Moving) {
@@ -690,7 +708,12 @@ void Graphic::glutIdle() {
                 }else if (map->getPositionCellType(newBulletPos) != Wall) {
                     Size translation = Graphic::getTranslation(d);
                     bulletParticle.initMovement(translation.width, translation.height,
-                        Graphic::bulletMovementTime, d);
+                            #ifdef ARDUINO
+                                Graphic::bulletMovementTime * speedFactor
+                            #else
+                                Graphic::bulletMovementTime
+                            #endif
+                            , d);
                 }
             }
         }
@@ -778,6 +801,7 @@ void Graphic::positionObserver(float alpha, float beta, int radius) {
             if (ainfo.joystickSwitchStatus) tankShoot();
             waterTexture = Graphic::choiseTextureFromTemperature(
                     ainfo.temperatureInCelcius);
+            setSpeedFactorFromHeartRate(ainfo.heartRate);
         }
     }
 
@@ -787,5 +811,11 @@ void Graphic::positionObserver(float alpha, float beta, int radius) {
         if (temperatureInCelcius < 22) return WaterYellow;
         if (temperatureInCelcius < 26) return WaterOrange;
         return WaterRed;
+    }
+
+    void Graphic::setSpeedFactorFromHeartRate(int heartRate) {
+        if (heartRate != -1) {
+            speedFactor = 70 / heartRate;
+        }
     }
 #endif

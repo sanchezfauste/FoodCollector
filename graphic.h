@@ -89,8 +89,10 @@ class Graphic {
     #ifdef ARDUINO
         Arduino *arduino;
         Texture waterTexture;
+        double speedFactor;
         void arduinoController();
         static Texture choiseTextureFromTemperature(int temperatureInCelcius);
+        void setSpeedFactorFromHeartRate(int heartRate);
     #endif
 
     Graphic();
