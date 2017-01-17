@@ -11,11 +11,11 @@ typedef struct ArduinoInfo {
 } ArduinoInfo;
 
 typedef enum Action {
-  QUIET = 0,
-  UP = 1,
+  UP = 0,
+  RIGHT = 1,
   DOWN = 2,
   LEFT = 3,
-  RIGHT = 4
+  QUIET = 4
 } Action;
 
 typedef enum SwitchStatus {
