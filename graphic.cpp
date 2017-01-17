@@ -68,6 +68,12 @@ Graphic::Graphic() : playerParticle(TankParticle(Graphic::defaultPlayerTankDirec
         enemyParticle(TankParticle(Graphic::defaultEnemyTankDirection)),
         bulletParticle(), enemyStrategy(NULL), angleAlpha(270), angleBeta(60){
     bulletPosition = new Position();
+    #ifdef ARDUINO
+        arduino = new Arduino();
+        if (!arduino->init()) {
+            exit(1);
+        }
+    #endif
 }
 
 Graphic& Graphic::getInstance() {
@@ -634,6 +640,9 @@ void Graphic::drawCube(const GLfloat* color, Point p, GLfloat width,
 }
 
 void Graphic::glutIdle() {
+    #ifdef ARDUINO
+        arduinoController();
+    #endif
     long t = glutGet(GLUT_ELAPSED_TIME);
     if (lastTime == 0) {
         lastTime = t;
@@ -739,3 +748,31 @@ void Graphic::positionObserver(float alpha, float beta, int radius) {
 
     gluLookAt(x, y, z, 0.0, 0.0, 0.0, upx, upy, upz);
 }
+
+#ifdef ARDUINO
+    #include <iostream>
+    void Graphic::arduinoController() {
+        ArduinoInfo ainfo = arduino->getArduinoInfo();
+        if (ainfo.readOk) {
+            cout << ainfo.acceleromerAction << endl;
+            switch (ainfo.joystickAction) {
+                case Up:
+                    if (angleBeta <= (90 - 4)) angleBeta += 3;
+                    break;
+                case Down:
+                    if (angleBeta >= (-90 + 4)) angleBeta -= 3;
+                    break;
+                case Left:
+                    angleAlpha = (angleAlpha + 3) % 360;
+                    break;
+                case Right:
+                    angleAlpha = (angleAlpha - 3 + 360) % 360;
+                    break;
+                default:
+                    break;
+            }
+            playerMove(ainfo.acceleromerAction);
+            if (ainfo.joystickSwitchStatus) tankShoot();
+        }
+    }
+#endif

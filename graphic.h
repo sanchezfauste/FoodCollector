@@ -14,6 +14,10 @@ Copyright (C) 2016 Marc Sanchez
 #include <GL/glut.h>
 #include <string>
 
+#ifdef ARDUINO
+    #include "arduino/arduino.h"
+#endif
+
 using namespace std;
 
 typedef struct Color {
@@ -80,6 +84,11 @@ class Graphic {
     Strategy *enemyStrategy;
     int angleAlpha;
     int angleBeta;
+
+    #ifdef ARDUINO
+        Arduino *arduino;
+        void arduinoController();
+    #endif
 
     Graphic();
     Graphic(Graphic const&);
