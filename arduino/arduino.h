@@ -6,13 +6,15 @@ Copyright (C) 2017 Marc Sanchez
 #ifndef __ARDUINO_H
 #define __ARDUINO_H
 
+#include "../map.h"
+
 using namespace std;
 
 typedef struct ArduinoInfo {
     bool readOk;
-    int acceleromerAction;
-    int joystickAction;
-    int joystickSwitchStatus;
+    Direction acceleromerAction;
+    Direction joystickAction;
+    bool joystickSwitchStatus;
     int temperatureInCelcius;
     int distanceInCm;
     int heartRate;
@@ -43,6 +45,8 @@ class Arduino {
 
     IntReading readInt();
     bool readArduinoInfoParameter(int *parameter);
+    bool readArduinoInfoParameter(Direction *parameter);
+    bool readArduinoInfoParameter(bool *parameter);
 
 public:
     bool init();

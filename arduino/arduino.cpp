@@ -9,7 +9,6 @@ Copyright (C) 2016 Marc Sanchez
 #include <unistd.h>
 #include "arduino-serial-lib.h"
 #include "arduino.h"
-#include "../map.h"
 
 using namespace std;
 
@@ -18,7 +17,7 @@ const int Arduino::bufferSize = 32;
 const int Arduino::baudrate = 9600;
 const char Arduino::eolchar = '\n';
 const char Arduino::delimiterChar = ';';
-const int Arduino::timeout = 5000;
+const int Arduino::timeout = 10;
 
 IntReading::IntReading(ReadStatus status, int value) :
     status(status), value(value) {}
@@ -51,6 +50,18 @@ ArduinoInfo Arduino::getArduinoInfo() {
 bool Arduino::readArduinoInfoParameter(int *parameter) {
     IntReading reading = readInt();
     *parameter = reading.value;
+    return reading.status == ReadOk;
+}
+
+bool Arduino::readArduinoInfoParameter(Direction *parameter) {
+    IntReading reading = readInt();
+    *parameter = (Direction) reading.value;
+    return reading.status == ReadOk;
+}
+
+bool Arduino::readArduinoInfoParameter(bool *parameter) {
+    IntReading reading = readInt();
+    *parameter = reading.value == 0 ? false : true;
     return reading.status == ReadOk;
 }
 
