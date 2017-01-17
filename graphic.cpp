@@ -750,11 +750,9 @@ void Graphic::positionObserver(float alpha, float beta, int radius) {
 }
 
 #ifdef ARDUINO
-    #include <iostream>
     void Graphic::arduinoController() {
         ArduinoInfo ainfo = arduino->getArduinoInfo();
         if (ainfo.readOk) {
-            cout << ainfo.acceleromerAction << endl;
             switch (ainfo.joystickAction) {
                 case Up:
                     if (angleBeta <= (90 - 4)) angleBeta += 3;
