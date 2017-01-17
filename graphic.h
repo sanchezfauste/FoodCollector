@@ -87,12 +87,18 @@ class Graphic {
     int angleBeta;
 
     #ifdef ARDUINO
+        static const Size arduinoInfoPosition;
+
         Arduino *arduino;
         Texture waterTexture;
         double speedFactor;
+        int lastTemperature;
+        int lastHeartRate;
+
         void arduinoController();
         static Texture choiseTextureFromTemperature(int temperatureInCelcius);
         void setSpeedFactorFromHeartRate(int heartRate);
+        void printArduinoInfo();
     #endif
 
     Graphic();

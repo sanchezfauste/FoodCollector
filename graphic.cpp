@@ -31,6 +31,10 @@ const double Graphic::glutRatio = 1.1;
 const Direction Graphic::defaultPlayerTankDirection = Right;
 const Direction Graphic::defaultEnemyTankDirection = Left;
 
+#ifdef ARDUINO
+    const Size Graphic::arduinoInfoPosition = Size(7.5, -22.5);
+#endif
+
 const char* const Graphic::gameTitle = "Food Collection Game - Tuita Team";
 
 const int Graphic::cellWidth = 30;
@@ -75,6 +79,8 @@ Graphic::Graphic() : playerParticle(TankParticle(Graphic::defaultPlayerTankDirec
         }
         waterTexture = WaterYellow;
         speedFactor = 1.0;
+        lastTemperature = 21;
+        lastHeartRate = 0;
     #endif
 }
 
@@ -167,6 +173,9 @@ void Graphic::glutDisplay() {
             bulletPosition->col, bulletParticle, Graphic::bulletColor);
     }
     printScore(Graphic::scoreInfoPosition.width, Graphic::scoreInfoPosition.height);
+    #ifdef ARDUINO
+        printArduinoInfo();
+    #endif
     glutSwapBuffers();
 }
 
@@ -802,6 +811,7 @@ void Graphic::positionObserver(float alpha, float beta, int radius) {
             waterTexture = Graphic::choiseTextureFromTemperature(
                     ainfo.temperatureInCelcius);
             setSpeedFactorFromHeartRate(ainfo.heartRate);
+            lastTemperature = ainfo.temperatureInCelcius;
         }
     }
 
@@ -816,6 +826,14 @@ void Graphic::positionObserver(float alpha, float beta, int radius) {
     void Graphic::setSpeedFactorFromHeartRate(int heartRate) {
         if (heartRate != -1) {
             speedFactor = 70 / heartRate;
+            lastHeartRate = heartRate;
         }
+    }
+
+    void Graphic::printArduinoInfo() {
+        ostringstream convert;
+        convert << lastTemperature << " C | " << lastHeartRate << " BPM";
+        printText(-this->width/2 + Graphic::arduinoInfoPosition.width,
+                this->height/2 + Graphic::arduinoInfoPosition.height, convert.str());
     }
 #endif
