@@ -413,6 +413,6 @@ void loop() {
   //Serial.print(getDistanceInCm());Serial.print(";");
   Serial.print(getHeartRate());Serial.print(";");
   Serial.print("\n");
-  delay(50);
+  delay(65);
 }
 
