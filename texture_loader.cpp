@@ -12,6 +12,14 @@ const char* const TextureLoader::grassTextureFile = "textures/grass.jpeg";
 const char* const TextureLoader::edgeTextureFile = "textures/edge.jpeg";
 const int TextureLoader::textureDimension = 64;
 
+#ifdef ARDUINO
+    const char* const TextureLoader::waterPurpleTextureFile = "textures/water_purple.jpeg";
+    const char* const TextureLoader::waterBlueTextureFile = "textures/water_blue.jpeg";
+    const char* const TextureLoader::waterYellowTextureFile = "textures/water_yellow.jpeg";
+    const char* const TextureLoader::waterOrangeTextureFile = "textures/water_orange.jpeg";
+    const char* const TextureLoader::waterRedTextureFile = "textures/water_red.jpeg";
+#endif
+
 void TextureLoader::LoadTextures() {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, Water);
@@ -23,6 +31,23 @@ void TextureLoader::LoadTextures() {
     glBindTexture(GL_TEXTURE_2D, Edge);
     TextureLoader::LoadTexture(TextureLoader::edgeTextureFile,
             TextureLoader::textureDimension);
+    #ifdef ARDUINO
+        glBindTexture(GL_TEXTURE_2D, WaterPurple);
+        TextureLoader::LoadTexture(TextureLoader::waterPurpleTextureFile,
+            TextureLoader::textureDimension);
+        glBindTexture(GL_TEXTURE_2D, WaterBlue);
+        TextureLoader::LoadTexture(TextureLoader::waterBlueTextureFile,
+            TextureLoader::textureDimension);
+        glBindTexture(GL_TEXTURE_2D, WaterYellow);
+        TextureLoader::LoadTexture(TextureLoader::waterYellowTextureFile,
+            TextureLoader::textureDimension);
+        glBindTexture(GL_TEXTURE_2D, WaterOrange);
+        TextureLoader::LoadTexture(TextureLoader::waterOrangeTextureFile,
+            TextureLoader::textureDimension);
+        glBindTexture(GL_TEXTURE_2D, WaterRed);
+        TextureLoader::LoadTexture(TextureLoader::waterRedTextureFile,
+            TextureLoader::textureDimension);
+    #endif
     glDisable(GL_TEXTURE_2D);
 }
 

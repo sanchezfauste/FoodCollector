@@ -16,6 +16,7 @@ Copyright (C) 2016 Marc Sanchez
 
 #ifdef ARDUINO
     #include "arduino/arduino.h"
+    #include "texture_loader.h"
 #endif
 
 using namespace std;
@@ -87,7 +88,9 @@ class Graphic {
 
     #ifdef ARDUINO
         Arduino *arduino;
+        Texture waterTexture;
         void arduinoController();
+        static Texture choiseTextureFromTemperature(int temperatureInCelcius);
     #endif
 
     Graphic();

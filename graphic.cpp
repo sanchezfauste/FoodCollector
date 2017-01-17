@@ -73,6 +73,7 @@ Graphic::Graphic() : playerParticle(TankParticle(Graphic::defaultPlayerTankDirec
         if (!arduino->init()) {
             exit(1);
         }
+        waterTexture = WaterYellow;
     #endif
 }
 
@@ -345,7 +346,11 @@ void Graphic::drawFloor(int row, int col) {
 
     glEnable(GL_TEXTURE_2D);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Graphic::fullColor);
-    glBindTexture(GL_TEXTURE_2D, Water);
+    #ifdef ARDUINO
+        glBindTexture(GL_TEXTURE_2D, waterTexture);
+    #else
+        glBindTexture(GL_TEXTURE_2D, Water);
+    #endif
     glBegin(GL_QUADS);
     glNormal3f(0,0,1);
     glTexCoord2f(2.0, 2.0);
@@ -771,6 +776,16 @@ void Graphic::positionObserver(float alpha, float beta, int radius) {
             }
             playerMove(ainfo.acceleromerAction);
             if (ainfo.joystickSwitchStatus) tankShoot();
+            waterTexture = Graphic::choiseTextureFromTemperature(
+                    ainfo.temperatureInCelcius);
         }
+    }
+
+    Texture Graphic::choiseTextureFromTemperature(int temperatureInCelcius) {
+        if (temperatureInCelcius < 18) return WaterPurple;
+        if (temperatureInCelcius < 20) return WaterBlue;
+        if (temperatureInCelcius < 22) return WaterYellow;
+        if (temperatureInCelcius < 26) return WaterOrange;
+        return WaterRed;
     }
 #endif
