@@ -34,3 +34,33 @@ To run the game execute the command:
 ./foodcollection <nRows> <nCols>
 ```
 Notice that `nRows` is the number of rows of the map and `nCols` is the number of cols of the map.
+
+# Arduino connections
+## DHT
+* `Signal` --> `Digital 3`
+* `-` --> `GND`
+* `+` --> `5V`
+
+## ADXL345
+* `SDA` -> `A4`
+* `SCL` -> `A5`
+* `GND` -> `GND`
+* `VCC` -> `5V`
+
+## Joystick
+* `SEL` -> `Digital 2`
+* `VERT` -> `A1`
+* `HORZ` -> `A0`
+* `GND` -> `GND`
+* `VCC` -> `5V`
+
+## Ultrasound
+* `Trig` -> `Digital 4`
+* `Echo` -> `Digital 5`
+* `GND` -> `GND`
+* `VCC` -> `5V`
+
+## Heart Rate
+* `Black` -> `GND`
+* `Red` -> `5V`
+* `Purple` -> `A2`
