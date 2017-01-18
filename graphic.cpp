@@ -805,7 +805,7 @@ void Graphic::positionObserver(float alpha, float beta, int radius) {
                 default:
                     break;
             }
-            playerMove(ainfo.acceleromerAction);
+            if (ainfo.acceleromerAction != None) playerMove(ainfo.acceleromerAction);
             if (ainfo.joystickSwitchStatus) tankShoot();
             waterTexture = Graphic::choiseTextureFromTemperature(
                     ainfo.temperatureInCelcius);
