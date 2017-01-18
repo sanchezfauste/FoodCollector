@@ -48,7 +48,6 @@ const GLint Graphic::sphereSlices = 10;
 const GLint Graphic::sphereStacks = 10;
 const GLint Graphic::cylinderSlices = 10;
 const GLint Graphic::cylinderStacks = 10;
-const long Graphic::playerMovementTime = 200;
 const long Graphic::bulletMovementTime = 75;
 
 Color::Color(const GLfloat red, const GLfloat green, const GLfloat blue,

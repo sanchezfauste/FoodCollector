@@ -123,7 +123,6 @@ class Graphic {
     static const GLint sphereStacks;
     static const GLint cylinderSlices;
     static const GLint cylinderStacks;
-    static const long playerMovementTime;
     static const long bulletMovementTime;
 
     static Graphic& getInstance();
