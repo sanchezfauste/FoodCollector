@@ -797,10 +797,10 @@ void Graphic::positionObserver(float alpha, float beta, int radius) {
                     if (angleBeta >= (-90 + 4)) angleBeta -= 3;
                     break;
                 case Left:
-                    angleAlpha = (angleAlpha + 3) % 360;
+                    angleAlpha = (angleAlpha + 1) % 360;
                     break;
                 case Right:
-                    angleAlpha = (angleAlpha - 3 + 360) % 360;
+                    angleAlpha = (angleAlpha - 1 + 360) % 360;
                     break;
                 default:
                     break;
