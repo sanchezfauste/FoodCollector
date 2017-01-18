@@ -825,7 +825,9 @@ void Graphic::positionObserver(float alpha, float beta, int radius) {
 
     void Graphic::setSpeedFactorFromHeartRate(int heartRate) {
         if (heartRate != -1) {
-            speedFactor = 70 / heartRate;
+            speedFactor = 70.0 / heartRate;
+            if (speedFactor > 2.0) speedFactor = 2.0;
+            else if (speedFactor < 0.5) speedFactor = 0.5;
             lastHeartRate = heartRate;
         }
     }
