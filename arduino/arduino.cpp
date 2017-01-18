@@ -17,7 +17,7 @@ const int Arduino::bufferSize = 32;
 const int Arduino::baudrate = 9600;
 const char Arduino::eolchar = '\n';
 const char Arduino::delimiterChar = ';';
-const int Arduino::timeout = 10;
+const int Arduino::timeout = 20;
 
 IntReading::IntReading(ReadStatus status, int value) :
     status(status), value(value) {}
@@ -37,13 +37,16 @@ bool Arduino::init() {
 
 ArduinoInfo Arduino::getArduinoInfo() {
     ArduinoInfo ainfo;
-    if (!readArduinoInfoParameter(&ainfo.acceleromerAction)) return ainfo;
-    if (!readArduinoInfoParameter(&ainfo.joystickAction)) return ainfo;
-    if (!readArduinoInfoParameter(&ainfo.joystickSwitchStatus)) return ainfo;
-    if (!readArduinoInfoParameter(&ainfo.temperatureInCelcius)) return ainfo;
-    //if (!readArduinoInfoParameter(&ainfo.distanceInCm)) return ainfo;
-    if (!readArduinoInfoParameter(&ainfo.heartRate)) return ainfo;
-    ainfo.readOk = true;
+    if (!readArduinoInfoParameter(&ainfo.acceleromerAction)
+            || !readArduinoInfoParameter(&ainfo.joystickAction)
+            || !readArduinoInfoParameter(&ainfo.joystickSwitchStatus)
+            || !readArduinoInfoParameter(&ainfo.temperatureInCelcius)
+            //|| !readArduinoInfoParameter(&ainfo.distanceInCm)
+            || !readArduinoInfoParameter(&ainfo.heartRate)) {
+        discardStruct();
+        return ainfo;
+    }
+    ainfo.readOk = readInt().status == EndOfStructure;
     return ainfo;
 }
 
@@ -89,4 +92,18 @@ IntReading Arduino::readInt() {
     }
     buffer[i] = '\0';
     return IntReading(status, atoi(buffer));
+}
+
+void Arduino::discardStruct() {
+    int n;
+    int timeout = Arduino::timeout;
+    char c;
+    while ((n = read(fd, &c, 1)) != -1 && timeout > 0) {
+        if(n == 0) {
+            usleep( 1 * 1000 );
+            timeout -= 1;
+        } else if (c == Arduino::eolchar) {
+            break;
+        }
+    }
 }

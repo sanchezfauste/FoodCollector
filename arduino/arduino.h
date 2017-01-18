@@ -47,6 +47,7 @@ class Arduino {
     bool readArduinoInfoParameter(int *parameter);
     bool readArduinoInfoParameter(Direction *parameter);
     bool readArduinoInfoParameter(bool *parameter);
+    void discardStruct();
 
 public:
     bool init();

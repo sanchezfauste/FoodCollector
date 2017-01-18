@@ -29,10 +29,10 @@
 
 Action getAccelerometerAction() {
   AccelerometerReading reading = readAccel();
-  if (reading.y > 80) return UP;
-  if (reading.y < -80) return DOWN;
-  if (reading.x > 80) return RIGHT;
-  if (reading.x < -80) return LEFT;
+  if (reading.y > 100) return UP;
+  if (reading.y < -100) return DOWN;
+  if (reading.x > 100) return RIGHT;
+  if (reading.x < -100) return LEFT;
   return QUIET;
 }
 
