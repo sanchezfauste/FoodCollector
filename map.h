@@ -9,6 +9,7 @@ Copyright (C) 2016 Marc Sanchez
 #include <vector>
 #include <set>
 #include <list>
+#include <string>
 
 using namespace std;
 
@@ -100,6 +101,7 @@ class Map {
     Map generateSuccessor(CellType agent, Direction action);
     set<Position> getFoodCells();
     void shootEnemy();
+    string toString() const;
 
 };
 

@@ -5,6 +5,7 @@ Copyright (C) 2016 Marc Sanchez
 
 #include "map.h"
 #include <iostream>
+#include <sstream>
 #include <cstdlib>
 
 using namespace std;
@@ -370,4 +371,14 @@ set<Position> Map::getFoodCells() {
 
 void Map::shootEnemy() {
     setEnemyPosition(enemyInitialPosition);
+}
+
+string Map::toString() const {
+    ostringstream convert;
+    for (int i = 0; i < nRows; i += 1) {
+        for (int j = 0; j < nCols; j += 1) {
+            convert << cells[i][j];
+        }
+    }
+    return convert.str();
 }
