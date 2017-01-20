@@ -10,8 +10,8 @@ Copyright (C) 2016 Marc Sanchez
 
 using namespace std;
 
-const int Map::minRows = 3;
-const int Map::minCols = 3;
+const int Map::minRows = 5;
+const int Map::minCols = 5;
 
 Position::Position(const int row, const int col) : row(row), col(col){}
 
