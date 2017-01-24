@@ -7,6 +7,8 @@ Copyright (C) 2016 Marc Sanchez
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include <stack>
+#include <set>
 
 using namespace std;
 
@@ -16,6 +18,9 @@ const int Map::minCols = 5;
 Position::Position(const int row, const int col) : row(row), col(col){}
 
 Position::Position() : row(-1), col(-1){}
+
+FringeElement::FringeElement(const Position pos, const int distance) :
+        pos(pos), distance(distance) {}
 
 bool Position::operator<(const Position &p) const {
     return (row == p.row) ? col < p.col : row < p.row;
@@ -130,7 +135,7 @@ vector<CellType> Map::getRow(int row) {
     return cells[row];
 }
 
-void Map::print() {
+void Map::print() const {
     for (int row = 0; row < nRows; row += 1) {
         for (int col = 0; col < nCols; col += 1) {
             switch (cells[row][col]) {
@@ -224,14 +229,18 @@ void Map::enemyMove(Direction d) {
     }
 }
 
-bool Map::playerCanMoveTo(Direction d) {
+bool Map::playerCanMoveTo(Direction d) const {
     Position neighborPosition = getNeighborPosition(getPlayerPosition(), d);
     return getPositionCellType(neighborPosition) != Wall;
 }
 
-bool Map::enemyCanMoveTo(Direction d) {
+bool Map::enemyCanMoveTo(Direction d) const {
     Position neighborPosition = getNeighborPosition(getEnemyPosition(), d);
     return getPositionCellType(neighborPosition) != Wall;
+}
+
+bool Map::canMoveTo(Position &p, Direction d) const {
+    return getPositionCellType(getNeighborPosition(p, d)) != Wall;
 }
 
 void Map::eatFood(Position p, CellType player) {
@@ -247,11 +256,11 @@ void Map::eatFood(Position p, CellType player) {
     }
 }
 
-CellType Map::getPositionCellType(Position p) {
+CellType Map::getPositionCellType(Position p) const {
     return cells[p.row][p.col];
 }
 
-Position Map::getNeighborPosition(Position p, Direction d) {
+Position Map::getNeighborPosition(Position p, Direction d) const {
     switch (d) {
         case Up:
             return Position(p.row-1, p.col);
@@ -310,7 +319,7 @@ void Map::setNextPlayerDirection(Direction d) {
     nextPlayerDirection = d;
 }
 
-list<Direction> Map::getEnemyLegalMoves() {
+list<Direction> Map::getEnemyLegalMoves() const {
     list<Direction> legalMoves;
     if (enemyCanMoveTo(Up)) legalMoves.push_back(Up);
     if (enemyCanMoveTo(Down)) legalMoves.push_back(Down);
@@ -319,7 +328,7 @@ list<Direction> Map::getEnemyLegalMoves() {
     return legalMoves;
 }
 
-list<Direction> Map::getPlayerLegalMoves() {
+list<Direction> Map::getPlayerLegalMoves() const {
     list<Direction> legalMoves;
     if (playerCanMoveTo(Up)) legalMoves.push_back(Up);
     if (playerCanMoveTo(Down)) legalMoves.push_back(Down);
@@ -328,7 +337,7 @@ list<Direction> Map::getPlayerLegalMoves() {
     return legalMoves;
 }
 
-list<Direction> Map::getLegalMoves(CellType agent) {
+list<Direction> Map::getLegalMoves(CellType agent) const {
     if (agent == Enemy) return getEnemyLegalMoves();
     else return getPlayerLegalMoves();
 }
@@ -365,7 +374,7 @@ Map::Map(const Map &m) : nRows(m.nRows), nCols(m.nCols),
     nextPlayerDirection = None;
 }
 
-set<Position> Map::getFoodCells() {
+set<Position> Map::getFoodCells() const {
     return foodCells;
 }
 
@@ -381,4 +390,39 @@ string Map::toString() const {
         }
     }
     return convert.str();
+}
+
+Position Map::getNextEnemyPosition(Direction d) const {
+    return getNeighborPosition(*enemyPosition, d);
+}
+
+list<Position> Map::getLegalNeighbors(Position p) const {
+    list<Position> legalNeighbors;
+    if (canMoveTo(p, Up)) legalNeighbors.push_back(getNeighborPosition(p, Up));
+    if (canMoveTo(p, Down)) legalNeighbors.push_back(getNeighborPosition(p, Down));
+    if (canMoveTo(p, Left)) legalNeighbors.push_back(getNeighborPosition(p, Left));
+    if (canMoveTo(p, Right)) legalNeighbors.push_back(getNeighborPosition(p, Right));
+    return legalNeighbors;
+}
+
+double Map::getClosestFoodDistance(Position &p) const {
+    set<Position> expanded;
+    stack<FringeElement> fringe;
+    fringe.push(FringeElement(p, 0));
+    while(!fringe.empty()) {
+        FringeElement elem = fringe.top();
+        fringe.pop();
+        if (expanded.find(elem.pos) != expanded.end()) continue;
+        expanded.insert(elem.pos);
+        if (getPositionCellType(elem.pos) == Food) return elem.distance;
+        list<Position> legalNeighbors = getLegalNeighbors(elem.pos);
+        for (list<Position>::iterator a = legalNeighbors.begin(); a != legalNeighbors.end(); ++a) {
+            fringe.push(FringeElement(*a, elem.distance + 1));
+        }
+    }
+    return -1;
+}
+
+long Map::getDimension() const {
+    return nRows * nCols;
 }

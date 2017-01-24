@@ -38,6 +38,12 @@ typedef struct Position {
     bool operator==(const Position &p) const;
 } Position;
 
+typedef struct FringeElement {
+    const Position pos;
+    const int distance;
+    FringeElement(const Position pos, const int distance);
+} FringeElement;
+
 class Map {
 
     vector<vector<CellType> > cells;
@@ -55,8 +61,8 @@ class Map {
 
     void initializeAvailableFood();
     void eatFood(Position p, CellType player);
-    list<Direction> getEnemyLegalMoves();
-    list<Direction> getPlayerLegalMoves();
+    list<Direction> getEnemyLegalMoves() const;
+    list<Direction> getPlayerLegalMoves() const;
 
   public:
     static const int minRows;
@@ -66,7 +72,7 @@ class Map {
     Map(const int nRows, const int nCols, const Position playerInitialPosition,
             const Position enemyInitialPosition);
     Map(const Map &m);
-    void print();
+    void print() const;
     void copySymmetricLeftToRight();
     int getNumberOfRows();
     int getNumberOfCols();
@@ -85,10 +91,11 @@ class Map {
     Position getEnemyPosition() const;
     void playerMove(Direction d);
     void enemyMove(Direction d);
-    bool playerCanMoveTo(Direction d);
-    bool enemyCanMoveTo(Direction d);
-    CellType getPositionCellType(Position p);
-    Position getNeighborPosition(Position p, Direction d);
+    bool playerCanMoveTo(Direction d) const;
+    bool enemyCanMoveTo(Direction d) const;
+    bool canMoveTo(Position &p, Direction d) const;
+    CellType getPositionCellType(Position p) const;
+    Position getNeighborPosition(Position p, Direction d) const;
     int getEatedFoodByPlayer();
     int getEatedFoodByEnemy();
     void initGame();
@@ -96,12 +103,16 @@ class Map {
     Direction getNextPlayerDirection();
     void setCurrentPlayerDirection(Direction d);
     void setNextPlayerDirection(Direction d);
-    list<Direction> getLegalMoves(CellType agent);
+    list<Direction> getLegalMoves(CellType agent) const;
+    list<Position> getLegalNeighbors(Position p) const;
     bool isFoodAvailable();
     Map generateSuccessor(CellType agent, Direction action);
-    set<Position> getFoodCells();
+    set<Position> getFoodCells() const;
     void shootEnemy();
     string toString() const;
+    Position getNextEnemyPosition(Direction d) const;
+    double getClosestFoodDistance(Position &p) const;
+    long getDimension() const;
 
 };
 

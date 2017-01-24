@@ -6,6 +6,7 @@ Copyright (C) 2016 Marc Sanchez
 #include "graphic.h"
 #include "mapgenerator.h"
 #include "texture_loader.h"
+#include "approximate_q_learning.h"
 #include <sstream>
 #include <math.h>
 
@@ -94,7 +95,7 @@ void Graphic::setMap(Map& map) {
     }
     if (enemyStrategy == NULL) delete(enemyStrategy);
     this->map = new Map(map);
-    enemyStrategy = new ExpectimaxStrategy(this->map);
+    enemyStrategy = new ApproximateQLearning(this->map);
     playerParticle.setState(Quiet);
     playerParticle.setTankOrientation(Graphic::defaultPlayerTankDirection);
     enemyParticle.setState(Quiet);
