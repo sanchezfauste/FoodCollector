@@ -35,32 +35,43 @@ To run the game execute the command:
 ```
 Notice that `nRows` is the number of rows of the map and `nCols` is the number of cols of the map.
 
-# Arduino connections
-## DHT
+# Arduino setup
+In order to run the game using the Arduino game controller you need to install the Arduino IDE and the following libraries:
+
+- Adafruit Sensor: https://github.com/adafruit/Adafruit_Sensor
+- Adafruit ADXL345: https://github.com/adafruit/Adafruit_ADXL345
+- DHT sensor library: https://github.com/adafruit/DHT-sensor-library
+
+The next step is to connect all the sensors to the Arduino board following the next specification:
+
+## Arduino connections
+### DHT
 * `Signal` --> `Digital 3`
 * `-` --> `GND`
 * `+` --> `5V`
 
-## ADXL345
+### ADXL345
 * `SDA` -> `A4`
 * `SCL` -> `A5`
 * `GND` -> `GND`
 * `VCC` -> `5V`
 
-## Joystick
+### Joystick
 * `SEL` -> `Digital 2`
 * `VERT` -> `A1`
 * `HORZ` -> `A0`
 * `GND` -> `GND`
 * `VCC` -> `5V`
 
-## Ultrasound
+### Ultrasound
 * `Trig` -> `Digital 4`
 * `Echo` -> `Digital 5`
 * `GND` -> `GND`
 * `VCC` -> `5V`
 
-## Heart Rate
+### Heart Rate
 * `Black` -> `GND`
 * `Red` -> `5V`
 * `Purple` -> `A2`
+
+Once you have prepared the Arduino environment you can flash the arduino sketch available on the `arduino_sketch` folder of the project.
