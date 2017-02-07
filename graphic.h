@@ -85,6 +85,7 @@ class Graphic {
     Strategy *enemyStrategy;
     int angleAlpha;
     int angleBeta;
+    bool gameRunning;
 
     #ifdef ARDUINO
         static const Size arduinoInfoPosition;

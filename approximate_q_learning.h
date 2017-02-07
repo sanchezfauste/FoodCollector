@@ -9,23 +9,14 @@ Copyright (C) 2017 Marc Sanchez
 #include <map>
 #include "map.h"
 #include "strategy.h"
+#include "reinforcement_agent.h"
 
 using namespace std;
 
-typedef struct QValuesKey {
-    const Map state;
-    const Direction action;
-    QValuesKey(const Map state, const Direction action);
-    bool operator<(const QValuesKey &qvk) const;
-} QValuesKey;
-
-class ApproximateQLearning : public Strategy {
+class ApproximateQLearning : public ReinforcementAgent {
 
     std::map<QValuesKey, double> qvalues;
     std::map<string, double> weights;
-    const double epsilon;
-    const double alpha;
-    const double discount;
 
     double getQValue(QValuesKey key);
     void setQValue(QValuesKey &key, double newValue);

@@ -111,8 +111,9 @@ class Map {
     void shootEnemy();
     string toString() const;
     Position getNextEnemyPosition(Direction d) const;
-    double getClosestFoodDistance(Position &p) const;
+    int getClosestFoodDistance(Position &p) const;
     long getDimension() const;
+    double getScore() const;
 
 };
 

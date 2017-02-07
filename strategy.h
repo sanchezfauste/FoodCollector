@@ -19,6 +19,8 @@ class Strategy {
   public:
     virtual Direction getAction() = 0;
     virtual ~Strategy();
+    virtual void final() = 0;
+    virtual void registerInitialState(Map *state) = 0;
 
     static double max(double v1, double v2);
     static double min(double v1, double v2);

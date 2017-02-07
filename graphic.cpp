@@ -70,7 +70,8 @@ Point::Point(const GLfloat x, const GLfloat y, const GLfloat z) : x(x), y(y), z(
 
 Graphic::Graphic() : playerParticle(TankParticle(Graphic::defaultPlayerTankDirection)),
         enemyParticle(TankParticle(Graphic::defaultEnemyTankDirection)),
-        bulletParticle(), enemyStrategy(NULL), angleAlpha(270), angleBeta(60){
+        bulletParticle(), enemyStrategy(NULL), angleAlpha(270), angleBeta(60),
+        gameRunning(false) {
     bulletPosition = new Position();
     #ifdef ARDUINO
         arduino = new Arduino();
@@ -93,14 +94,18 @@ void Graphic::setMap(Map& map) {
     if (this->map) {
         delete(this->map);
     }
-    if (enemyStrategy == NULL) delete(enemyStrategy);
     this->map = new Map(map);
-    enemyStrategy = new ApproximateQLearning(this->map);
+    if (enemyStrategy == NULL) {
+        enemyStrategy = new ApproximateQLearning(this->map);
+    } else {
+        enemyStrategy->registerInitialState(this->map);
+    }
     playerParticle.setState(Quiet);
     playerParticle.setTankOrientation(Graphic::defaultPlayerTankDirection);
     enemyParticle.setState(Quiet);
     enemyParticle.setTankOrientation(Graphic::defaultEnemyTankDirection);
     bulletParticle.setState(Quiet);
+    gameRunning = true;
 }
 
 int Graphic::getScreenWidth() {
@@ -703,6 +708,9 @@ void Graphic::glutIdle() {
                         #endif
                         );
             }
+        } else if (gameRunning) {
+            gameRunning = false;
+            enemyStrategy->final();
         }
         if (bulletParticle.getState() == Moving) {
             if (bulletParticle.integrate(elapsedTime)) {

@@ -3,27 +3,17 @@ Copyright (C) 2017 Meritxell Jordana
 Copyright (C) 2017 Marc Sanchez
 */
 
-#include <string>
-#include <sstream>
 #include <cstdlib>
 #include "approximate_q_learning.h"
 
-QValuesKey::QValuesKey(const Map state, const Direction action) : state(state),
-        action(action) {}
-
-bool QValuesKey::operator<(const QValuesKey &qvk) const {
-    ostringstream convert;
-    ostringstream convert1;
-    convert << state.toString() << ',' << action;
-    convert1 << qvk.state.toString() << ',' << qvk.action;
-    return convert.str() < convert1.str();
+ApproximateQLearning::ApproximateQLearning(Map *map, const double epsilon,
+        const double alpha, const double discount) :
+        ReinforcementAgent(map, 10, epsilon, alpha, discount) {
+    registerInitialState(map);
 }
 
-ApproximateQLearning::ApproximateQLearning(Map *map, const double epsilon,
-        const double alpha, const double discount) : Strategy(map),
-        epsilon(epsilon), alpha(alpha), discount(discount) {}
-
 Direction ApproximateQLearning::getAction() {
+    observationFunction(*map);
     list<Direction> legalMoves = map->getLegalMoves(Enemy);
     Direction action = None;
     if (legalMoves.size() != 0) {
@@ -33,6 +23,7 @@ Direction ApproximateQLearning::getAction() {
             action = getPolicy(*map);
         }
     }
+    doAction(*map, action);
     return action;
 }
 
@@ -96,15 +87,18 @@ std::map<string, double> ApproximateQLearning::getFeatures(QValuesKey &key) {
     std::map<string, double> features;
     features["bias"] = 1.0;
     Position nextEnemyPosition = key.state.getNextEnemyPosition(key.action);
-    features["#-of-ghosts-1-step-away"] = manhattanDistance(
-            key.state.getPlayerPosition(), key.state.getEnemyPosition()) == 1 ? 1 : 0;
-    if (features["#-of-ghosts-1-step-away"] == 0
-            && key.state.getPositionCellType(nextEnemyPosition) == Food) {
-        features["eats-food"] = 10.0;
+    if (manhattanDistance(key.state.getPlayerPosition(),
+            key.state.getEnemyPosition()) == 1) {
+        features["#-of-ghosts-1-step-away"] = 1.0;
+    } else {
+        features["#-of-ghosts-1-step-away"] = 0.0;
+        if (key.state.getPositionCellType(nextEnemyPosition) == Food) {
+            features["eats-food"] = 10.0;
+        }
     }
-    double dist = key.state.getClosestFoodDistance(nextEnemyPosition);
+    int dist = key.state.getClosestFoodDistance(nextEnemyPosition);
     if (dist > 0) {
-        features["closest-food"] = dist / key.state.getDimension();
+        features["closest-food"] = (double) dist / key.state.getDimension();
     }
     return features;
 }

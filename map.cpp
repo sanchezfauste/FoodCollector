@@ -405,7 +405,7 @@ list<Position> Map::getLegalNeighbors(Position p) const {
     return legalNeighbors;
 }
 
-double Map::getClosestFoodDistance(Position &p) const {
+int Map::getClosestFoodDistance(Position &p) const {
     set<Position> expanded;
     stack<FringeElement> fringe;
     fringe.push(FringeElement(p, 0));
@@ -425,4 +425,8 @@ double Map::getClosestFoodDistance(Position &p) const {
 
 long Map::getDimension() const {
     return nRows * nCols;
+}
+
+double Map::getScore() const {
+    return eatedFoodByEnemy;
 }

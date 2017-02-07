@@ -10,10 +10,12 @@ $(TARGET) : main.cpp map.cpp map.h mapgenerator.cpp mapgenerator.h \
 		graphic.cpp graphic.h particle.cpp particle.h expectimax_strategy.cpp \
 		expectimax_strategy.h tank_particle.cpp tank_particle.h \
 		texture_loader.cpp texture_loader.h strategy.cpp strategy.h \
-		approximate_q_learning.cpp approximate_q_learning.h
+		approximate_q_learning.cpp approximate_q_learning.h \
+		reinforcement_agent.cpp reinforcement_agent.h
 	g++ graphic.cpp main.cpp map.cpp mapgenerator.cpp particle.cpp \
 		expectimax_strategy.cpp tank_particle.cpp texture_loader.cpp \
-		strategy.cpp approximate_q_learning.cpp -o $(TARGET) $(CFLAGS)
+		strategy.cpp approximate_q_learning.cpp reinforcement_agent.cpp \
+		-o $(TARGET) $(CFLAGS)
 
 $(ARDUINO_TARGET) : main.cpp map.cpp map.h mapgenerator.cpp mapgenerator.h \
 		graphic.cpp graphic.h particle.cpp particle.h expectimax_strategy.cpp \
@@ -21,11 +23,12 @@ $(ARDUINO_TARGET) : main.cpp map.cpp map.h mapgenerator.cpp mapgenerator.h \
 		texture_loader.cpp texture_loader.h strategy.cpp strategy.h \
 		arduino/arduino-serial-lib.h arduino/arduino-serial-lib.c \
 		arduino/arduino.h arduino/arduino.cpp approximate_q_learning.cpp \
-		approximate_q_learning.h
+		approximate_q_learning.h reinforcement_agent.cpp reinforcement_agent.h
 	g++ graphic.cpp main.cpp map.cpp mapgenerator.cpp particle.cpp \
 		expectimax_strategy.cpp tank_particle.cpp texture_loader.cpp \
 		strategy.cpp arduino/arduino-serial-lib.c arduino/arduino.cpp \
-		approximate_q_learning.cpp -DARDUINO -o $(ARDUINO_TARGET) $(CFLAGS)
+		approximate_q_learning.cpp reinforcement_agent.cpp -DARDUINO \
+		-o $(ARDUINO_TARGET) $(CFLAGS)
 
 clean:
 	rm $(TARGET) $(ARDUINO_TARGET)
