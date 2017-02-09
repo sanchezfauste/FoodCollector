@@ -7,7 +7,7 @@ Copyright (C) 2016 Marc Sanchez
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
-#include <stack>
+#include <queue>
 #include <set>
 
 using namespace std;
@@ -407,10 +407,10 @@ list<Position> Map::getLegalNeighbors(Position p) const {
 
 int Map::getClosestFoodDistance(Position &p) const {
     set<Position> expanded;
-    stack<FringeElement> fringe;
+    queue<FringeElement> fringe;
     fringe.push(FringeElement(p, 0));
     while(!fringe.empty()) {
-        FringeElement elem = fringe.top();
+        FringeElement elem = fringe.front();
         fringe.pop();
         if (expanded.find(elem.pos) != expanded.end()) continue;
         expanded.insert(elem.pos);
@@ -428,5 +428,5 @@ long Map::getDimension() const {
 }
 
 double Map::getScore() const {
-    return eatedFoodByEnemy;
+    return eatedFoodByEnemy * 10.0;
 }

@@ -22,10 +22,8 @@ class Strategy {
     virtual void final() = 0;
     virtual void registerInitialState(Map *state) = 0;
 
-    static double max(double v1, double v2);
-    static double min(double v1, double v2);
-    static double abs(double v1);
     static Direction getRandomDirection(list<Direction> directions);
+    static double manhattanDistance(Position p1, Position p2);
 
 };
 

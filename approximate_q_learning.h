@@ -27,7 +27,7 @@ class ApproximateQLearning : public ReinforcementAgent {
     double getValue(Map &map);
     bool flipCoin(double p);
     std::map<string, double> getFeatures(QValuesKey &key);
-    double manhattanDistance(Position p1, Position p2);
+    static void divideMapBy(std::map<string, double> &features, double divisor);
 
   public:
     ApproximateQLearning(Map *map, const double epsilon = 0.05,

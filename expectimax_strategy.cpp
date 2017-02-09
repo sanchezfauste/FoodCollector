@@ -3,6 +3,7 @@ Copyright (C) 2016 Meritxell Jordana
 Copyright (C) 2016 Marc Sanchez
 */
 
+#include <math.h>
 #include "expectimax_strategy.h"
 
 ExpectimaxStrategy::ExpectimaxStrategy(Map *map) : Strategy(map) {}
@@ -30,7 +31,7 @@ double ExpectimaxStrategy::max_value(Map map, CellType agent, int depth) {
     list<Direction> legalMoves = map.getLegalMoves(agent);
     double v = -30000000;
     for (list<Direction>::iterator a = legalMoves.begin(); a != legalMoves.end(); ++a) {
-        v = Strategy::max(v, min_value(result(map, agent, *a), Player, depth));
+        v = fmax(v, min_value(result(map, agent, *a), Player, depth));
     }
     return v;
 }
@@ -80,5 +81,5 @@ double ExpectimaxStrategy::evaluationFunction(Map &map) {
 }
 
 double ExpectimaxStrategy::minDistance(Position p1, Position p2) {
-    return Strategy::abs(p1.row - p2.row) + Strategy::abs(p1.col - p2.col);
+    return Strategy::manhattanDistance(p1, p2);
 }

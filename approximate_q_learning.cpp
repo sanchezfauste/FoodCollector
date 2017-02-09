@@ -4,6 +4,7 @@ Copyright (C) 2017 Marc Sanchez
 */
 
 #include <cstdlib>
+#include <math.h>
 #include "approximate_q_learning.h"
 
 ApproximateQLearning::ApproximateQLearning(Map *map, const double epsilon,
@@ -31,7 +32,7 @@ double ApproximateQLearning::getQValue(QValuesKey key) {
     double qValue = 0.0;
     std::map<string, double> features = getFeatures(key);
     for (std::map<string, double>::iterator a = features.begin(); a != features.end(); ++a) {
-        qValue += /*weights[a->first] **/ a->second;
+        qValue += weights[a->first] * a->second;
     }
     return qValue;
 }
@@ -56,7 +57,7 @@ Direction ApproximateQLearning::computeActionFromQValues(Map &map) {
     double bestValue = getValue(map);
     list<Direction> bestActions;
     for (list<Direction>::iterator a = legalMoves.begin(); a != legalMoves.end(); ++a) {
-        if (abs(bestValue - getQValue(QValuesKey(map, *a))) < 0.0000001) {
+        if (fabs(bestValue - getQValue(QValuesKey(map, *a))) < 0.0000001) {
             bestActions.push_back(*a);
         }
     }
@@ -87,22 +88,26 @@ std::map<string, double> ApproximateQLearning::getFeatures(QValuesKey &key) {
     std::map<string, double> features;
     features["bias"] = 1.0;
     Position nextEnemyPosition = key.state.getNextEnemyPosition(key.action);
-    if (manhattanDistance(key.state.getPlayerPosition(),
+    if (Strategy::manhattanDistance(key.state.getPlayerPosition(),
             key.state.getEnemyPosition()) == 1) {
         features["#-of-ghosts-1-step-away"] = 1.0;
     } else {
         features["#-of-ghosts-1-step-away"] = 0.0;
         if (key.state.getPositionCellType(nextEnemyPosition) == Food) {
-            features["eats-food"] = 10.0;
+            features["eats-food"] = 1.0;
         }
     }
     int dist = key.state.getClosestFoodDistance(nextEnemyPosition);
     if (dist > 0) {
         features["closest-food"] = (double) dist / key.state.getDimension();
     }
+    divideMapBy(features, 10.0);
     return features;
 }
 
-double ApproximateQLearning::manhattanDistance(Position p1, Position p2) {
-    return Strategy::abs(p1.row - p2.row) + Strategy::abs(p1.col - p2.col);
+void ApproximateQLearning::divideMapBy(std::map<string, double> &features,
+        double divisor) {
+    for (std::map<string, double>::iterator a = features.begin(); a != features.end(); ++a) {
+        features[a->first] = a->second / divisor;
+    }
 }
