@@ -281,6 +281,9 @@ void Graphic::glutKeyboard(unsigned char key, int x, int y) {
         case 't':
             training = !training;
             break;
+        case 27:
+            exit(0);
+            break;
         case 'r':
             Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
             setMap(m);
