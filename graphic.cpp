@@ -7,6 +7,8 @@ Copyright (C) 2016 Marc Sanchez
 #include "mapgenerator.h"
 #include "texture_loader.h"
 #include "approximate_q_learning.h"
+#include "expectimax_strategy.h"
+#include "expectimax_strategy_player.h"
 #include <sstream>
 #include <math.h>
 
@@ -68,10 +70,10 @@ Size::Size(const float width, const float height) : width(width), height(height)
 
 Point::Point(const GLfloat x, const GLfloat y, const GLfloat z) : x(x), y(y), z(z) {}
 
-Graphic::Graphic() : playerParticle(TankParticle(Graphic::defaultPlayerTankDirection)),
+Graphic::Graphic(bool training) : playerParticle(TankParticle(Graphic::defaultPlayerTankDirection)),
         enemyParticle(TankParticle(Graphic::defaultEnemyTankDirection)),
-        bulletParticle(), enemyStrategy(NULL), angleAlpha(270), angleBeta(60),
-        gameRunning(false) {
+        bulletParticle(), enemyStrategy(NULL), playerStrategy(NULL),
+        angleAlpha(270), angleBeta(60), gameRunning(false), training(training) {
     bulletPosition = new Position();
     speedFactor = 1.0;
     #ifdef ARDUINO
@@ -99,6 +101,11 @@ void Graphic::setMap(Map& map) {
         enemyStrategy = new ApproximateQLearning(this->map);
     } else {
         enemyStrategy->registerInitialState(this->map);
+    }
+    if (playerStrategy == NULL) {
+        playerStrategy = new ExpectimaxStrategyPlayer(this->map);
+    } else {
+        playerStrategy->registerInitialState(this->map);
     }
     playerParticle.setState(Quiet);
     playerParticle.setTankOrientation(Graphic::defaultPlayerTankDirection);
@@ -270,6 +277,9 @@ void Graphic::glutKeyboard(unsigned char key, int x, int y) {
             break;
         case '-':
             speedFactor = speedFactor < 2 ? speedFactor + 0.05 : 2;
+            break;
+        case 't':
+            training = !training;
             break;
         case 'r':
             Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
@@ -676,17 +686,30 @@ void Graphic::glutIdle() {
         lastTime = t;
     } else {
         long elapsedTime = t - lastTime;
-        if (playerParticle.getState() == Moving) {
-            if (playerParticle.integrate(elapsedTime)) {
-                Direction nextPlayerDirection = map->getNextPlayerDirection();
-                map->playerMove(playerParticle.getDirection());
-                if (nextPlayerDirection != None
-                        && map->playerCanMoveTo(nextPlayerDirection)) {
-                    playerMove(nextPlayerDirection);
-                    map->setNextPlayerDirection(None);
-                } else {
-                    playerMove(map->getCurrentPlayerDirection());
+        if (!training) {
+            if (playerParticle.getState() == Moving) {
+                if (playerParticle.integrate(elapsedTime)) {
+                    Direction nextPlayerDirection = map->getNextPlayerDirection();
+                    map->playerMove(playerParticle.getDirection());
+                    if (nextPlayerDirection != None
+                            && map->playerCanMoveTo(nextPlayerDirection)) {
+                        playerMove(nextPlayerDirection);
+                        map->setNextPlayerDirection(None);
+                    } else {
+                        playerMove(map->getCurrentPlayerDirection());
+                    }
                 }
+            }
+        } else if (playerParticle.getState() == Moving) {
+            if (playerParticle.integrate(elapsedTime)) {
+                map->playerMove(playerParticle.getDirection());
+            }
+        } else if (map->isFoodAvailable()) {
+            Direction d = playerStrategy->getAction();
+            if (map->playerCanMoveTo(d)) {
+                Size translation = Graphic::getTranslation(d);
+                playerParticle.initMovement(translation.width, translation.height, d
+                        , speedFactor);
             }
         }
         if (enemyParticle.getState() == Moving) {
@@ -836,3 +859,7 @@ void Graphic::positionObserver(float alpha, float beta, int radius) {
                 this->height/2 + Graphic::arduinoInfoPosition.height, convert.str());
     }
 #endif
+
+void Graphic::setTraining(bool training) {
+    this->training = training;
+}

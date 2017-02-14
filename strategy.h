@@ -19,8 +19,8 @@ class Strategy {
   public:
     virtual Direction getAction() = 0;
     virtual ~Strategy();
-    virtual void final() = 0;
-    virtual void registerInitialState(Map *state) = 0;
+    virtual void final();
+    virtual void registerInitialState(Map *state);
 
     static Direction getRandomDirection(list<Direction> directions);
     static double manhattanDistance(Position p1, Position p2);

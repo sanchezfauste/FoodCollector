@@ -10,7 +10,6 @@ Copyright (C) 2016 Marc Sanchez
 #include "particle.h"
 #include "tank_particle.h"
 #include "strategy.h"
-#include "expectimax_strategy.h"
 #include <GL/glut.h>
 #include <string>
 
@@ -83,9 +82,11 @@ class Graphic {
     Position *bulletPosition;
     long lastTime;
     Strategy *enemyStrategy;
+    Strategy *playerStrategy;
     int angleAlpha;
     int angleBeta;
     bool gameRunning;
+    bool training;
     double speedFactor;
 
     #ifdef ARDUINO
@@ -102,7 +103,7 @@ class Graphic {
         void printArduinoInfo();
     #endif
 
-    Graphic();
+    Graphic(bool training = false);
     Graphic(Graphic const&);
     void operator=(Graphic const&);
     void playerMove(Direction d);
@@ -153,6 +154,7 @@ class Graphic {
     void positionObserver(float alpha, float beta, int radius);
     void drawFloor(int row, int col);
     void setSpotLight(GLenum light, Point p, const GLfloat* color);
+    void setTraining(bool training);
 
 };
 

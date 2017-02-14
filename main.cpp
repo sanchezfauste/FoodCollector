@@ -8,17 +8,21 @@ Copyright (C) 2016 Marc Sanchez
 #include "graphic.h"
 #include <iostream>
 #include <stdlib.h>
+#include <string.h>
 
 using namespace std;
 
 int main(int argc, char **argv) {
-    if (argc != 3) {
-        cout << "Use: " << argv[0] << " <nRows> <nCols>" << endl;
+    if (argc < 3) {
+        cout << "Use: " << argv[0] << " <nRows> <nCols> [--training]" << endl;
         return 1;
     }
     int graphicWidth = atoi(argv[2]) * Graphic::cellWidth;
     int graphicHeight = atoi(argv[1]) * Graphic::cellHeight;
     Graphic& g = Graphic::getInstance();
+    if (argc >= 4 && strcmp(argv[3], "--training") == 0) {
+        g.setTraining(true);
+    }
     g.glutInitialize(&argc, argv);
     if (graphicWidth > g.getScreenWidth() || graphicHeight > g.getScreenHeight()
             || atoi(argv[1]) < Map::minRows || atoi(argv[2]) < Map::minCols) {

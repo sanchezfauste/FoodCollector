@@ -13,13 +13,15 @@ using namespace std;
 
 class ExpectimaxStrategy : public Strategy {
 
+    virtual double max_value(Map map, CellType agent, int depth);
+    virtual double min_value(Map map, CellType agent, int depth);
+    virtual Direction minimax_decision(int depth);
+    virtual double evaluationFunction(Map &map);
+
+  protected:
     double utility(Map &map);
     bool terminalTest(Map &map, int depth);
     Map result(Map &map, CellType agent, Direction action);
-    double max_value(Map map, CellType agent, int depth);
-    double min_value(Map map, CellType agent, int depth);
-    Direction minimax_decision(int depth);
-    double evaluationFunction(Map &map);
     double minDistance(Position p1, Position p2);
 
   public:

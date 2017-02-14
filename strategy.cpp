@@ -23,3 +23,11 @@ Direction Strategy::getRandomDirection(list<Direction> directions) {
 double Strategy::manhattanDistance(Position p1, Position p2) {
     return fabs(p1.row - p2.row) + fabs(p1.col - p2.col);
 }
+
+void Strategy::registerInitialState(Map *state) {
+    map = state;
+}
+
+void Strategy::final() {
+
+}
