@@ -16,18 +16,10 @@ TankParticle::TankParticle(Direction tankOrientation) : state(Quiet) {
 }
 
 void TankParticle::initMovement(float widthTranslation, float heightTranslation,
-        Direction direction
-        #ifdef ARDUINO
-            , double speedFactor
-        #endif
-        ) {
+        Direction direction, double speedFactor) {
     this->widthTranslation = widthTranslation;
     this->heightTranslation = heightTranslation;
-    #ifdef ARDUINO
-        movementTimeRemaining = TankParticle::tankMovementTime * speedFactor;
-    #else
-        movementTimeRemaining = TankParticle::tankMovementTime;
-    #endif
+    movementTimeRemaining = TankParticle::tankMovementTime * speedFactor;
     widthTranslationVector = widthTranslation / movementTimeRemaining;
     heightTranslationVector = heightTranslation / movementTimeRemaining;
     widthCurrentTranslation = 0;
@@ -38,13 +30,8 @@ void TankParticle::initMovement(float widthTranslation, float heightTranslation,
     if (tankOrientation != direction) {
         rotating = true;
         int rotationSteps = getTankRotationSteps(direction);
-        #ifdef ARDUINO
-            rotationTimeRemaining =
-                TankParticle::tankRotationTime * speedFactor * abs(rotationSteps);
-        #else
-            rotationTimeRemaining =
-                TankParticle::tankRotationTime * abs(rotationSteps);
-        #endif
+        rotationTimeRemaining =
+            TankParticle::tankRotationTime * speedFactor * abs(rotationSteps);
         degreesTranslation = rotationSteps * 90.0;
         degreesTranslationVector = degreesTranslation / rotationTimeRemaining;
     } else {

@@ -73,13 +73,13 @@ Graphic::Graphic() : playerParticle(TankParticle(Graphic::defaultPlayerTankDirec
         bulletParticle(), enemyStrategy(NULL), angleAlpha(270), angleBeta(60),
         gameRunning(false) {
     bulletPosition = new Position();
+    speedFactor = 1.0;
     #ifdef ARDUINO
         arduino = new Arduino();
         if (!arduino->init()) {
             exit(1);
         }
         waterTexture = WaterYellow;
-        speedFactor = 1.0;
         lastTemperature = 21;
         lastHeartRate = 0;
     #endif
@@ -193,12 +193,7 @@ void Graphic::tankShoot() {
         delete(bulletPosition);
         bulletPosition = new Position(playerPos.row, playerPos.col);
         bulletParticle.initMovement(translation.width, translation.height,
-            #ifdef ARDUINO
-                Graphic::bulletMovementTime * speedFactor
-            #else
-                Graphic::bulletMovementTime
-            #endif
-            , d);
+                Graphic::bulletMovementTime * speedFactor, d);
     }
 }
 
@@ -232,7 +227,7 @@ void Graphic::printText(float width, float height, string str) {
 void Graphic::printScore(float width, float height) {
     ostringstream convert;
     convert << "Player: " << map->getEatedFoodByPlayer() << " | Enemy: "
-            << map->getEatedFoodByEnemy();
+            << map->getEatedFoodByEnemy() << " | Speed: " << speedFactor;
     printText(-this->width/2 + width, -this->height/2 + height, convert.str());
 }
 
@@ -270,6 +265,12 @@ void Graphic::glutKeyboard(unsigned char key, int x, int y) {
         case ' ':
             tankShoot();
             break;
+        case '+':
+            speedFactor = speedFactor > 0.06 ? speedFactor - 0.05 : 0.05;
+            break;
+        case '-':
+            speedFactor = speedFactor < 2 ? speedFactor + 0.05 : 2;
+            break;
         case 'r':
             Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
             setMap(m);
@@ -303,10 +304,7 @@ void Graphic::playerMove(Direction d) {
             map->setCurrentPlayerDirection(d);
             Size translation = Graphic::getTranslation(d);
             playerParticle.initMovement(translation.width, translation.height, d
-                    #ifdef ARDUINO
-                        , speedFactor
-                    #endif
-                    );
+                    , speedFactor);
         }
     } else {
         map->setNextPlayerDirection(d);
@@ -318,10 +316,7 @@ void Graphic::enemyMove(Direction d) {
         if (map->enemyCanMoveTo(d) && d != None) {
             Size translation = Graphic::getTranslation(d);
             enemyParticle.initMovement(translation.width, translation.height, d
-                    #ifdef ARDUINO
-                        , speedFactor
-                    #endif
-                    );
+                    , speedFactor);
         }
     }
 }
@@ -703,14 +698,13 @@ void Graphic::glutIdle() {
             if (map->enemyCanMoveTo(d)) {
                 Size translation = Graphic::getTranslation(d);
                 enemyParticle.initMovement(translation.width, translation.height, d
-                        #ifdef ARDUINO
-                            , speedFactor
-                        #endif
-                        );
+                        , speedFactor);
             }
         } else if (gameRunning) {
             gameRunning = false;
             enemyStrategy->final();
+            Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
+            setMap(m);
         }
         if (bulletParticle.getState() == Moving) {
             if (bulletParticle.integrate(elapsedTime)) {
@@ -725,12 +719,7 @@ void Graphic::glutIdle() {
                 }else if (map->getPositionCellType(newBulletPos) != Wall) {
                     Size translation = Graphic::getTranslation(d);
                     bulletParticle.initMovement(translation.width, translation.height,
-                            #ifdef ARDUINO
-                                Graphic::bulletMovementTime * speedFactor
-                            #else
-                                Graphic::bulletMovementTime
-                            #endif
-                            , d);
+                            Graphic::bulletMovementTime * speedFactor, d);
                 }
             }
         }

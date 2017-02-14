@@ -86,13 +86,13 @@ class Graphic {
     int angleAlpha;
     int angleBeta;
     bool gameRunning;
+    double speedFactor;
 
     #ifdef ARDUINO
         static const Size arduinoInfoPosition;
 
         Arduino *arduino;
         Texture waterTexture;
-        double speedFactor;
         int lastTemperature;
         int lastHeartRate;
 

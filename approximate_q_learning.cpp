@@ -9,7 +9,7 @@ Copyright (C) 2017 Marc Sanchez
 
 ApproximateQLearning::ApproximateQLearning(Map *map, const double epsilon,
         const double alpha, const double discount) :
-        ReinforcementAgent(map, 10, epsilon, alpha, discount) {
+        ReinforcementAgent(map, 50, epsilon, alpha, discount) {
     registerInitialState(map);
 }
 

@@ -40,11 +40,7 @@ class TankParticle {
 
     TankParticle(Direction tankOrientation);
     void initMovement(float widthTranslation, float heightTranslation,
-        Direction direction
-        #ifdef ARDUINO
-            , double speedFactor
-        #endif
-    );
+        Direction direction, double speedFactor);
     bool integrate(long elapsedTime);
     float getCurrentWidthTranslation();
     float getCurrentHeightTranslation();

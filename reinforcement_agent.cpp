@@ -70,7 +70,7 @@ void ReinforcementAgent::final() {
     observeTransition(QValuesKey(*lastState, lastAction), *map, deltaReward);
     stopEpisode();
     double lastWindowAccumRewards = map->getScore();
-    int NUM_EPS_UPDATE = 100;
+    int NUM_EPS_UPDATE = 25;
     if (episodes % NUM_EPS_UPDATE == 0) {
         cout << "Reinforcement Learning Status:" << endl;
         double windowAvg = lastWindowAccumRewards / NUM_EPS_UPDATE;
