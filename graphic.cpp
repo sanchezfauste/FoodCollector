@@ -11,6 +11,8 @@ Copyright (C) 2016 Marc Sanchez
 #include "expectimax_strategy_player.h"
 #include <sstream>
 #include <math.h>
+#include <stdlib.h>
+#include <iostream>
 
 using namespace std;
 
@@ -97,6 +99,7 @@ void Graphic::setMap(Map& map) {
         delete(this->map);
     }
     this->map = new Map(map);
+    map.print();
     if (enemyStrategy == NULL) {
         enemyStrategy = new ApproximateQLearning(this->map);
     } else {
@@ -729,6 +732,8 @@ void Graphic::glutIdle() {
         } else if (gameRunning) {
             gameRunning = false;
             enemyStrategy->final();
+            cout << "Player score: " << map->getEatedFoodByPlayer() << endl;
+            cout << "Enemy score: " << map->getEatedFoodByEnemy() << endl << endl;
             Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
             setMap(m);
         }
@@ -747,6 +752,18 @@ void Graphic::glutIdle() {
                     bulletParticle.initMovement(translation.width, translation.height,
                             Graphic::bulletMovementTime * speedFactor, d);
                 }
+            }
+        } else if (training) {
+            Position e = map->getEnemyPosition();
+            Position p = map->getPlayerPosition();
+            Direction d = playerParticle.getTankOrientation();
+            if ((p.row == e.row && abs(p.col - e.col) < 3
+                    && !map->wallBetweenCols(p.row, min(p.col, e.col),
+                    max(p.col, e.col)) && (p.col - e.col > 0 ? d == Left : d == Right))
+                    || (p.col == e.col && abs(p.row - e.row) < 3
+                    && !map->wallBetweenRows(p.col, min(p.row, e.row),
+                    max(p.row, e.row)) && (p.row - e.row > 0 ? d == Up : d == Down))) {
+                tankShoot();
             }
         }
         lastTime = t;

@@ -36,7 +36,6 @@ int main(int argc, char **argv) {
     }
     g.setGlutDimensions(graphicWidth, graphicHeight);
     Map map = MapGenerator(atoi(argv[1]), atoi(argv[2])).getMap();
-    map.print();
     g.setMap(map);
     g.glutRun();
     return 0;

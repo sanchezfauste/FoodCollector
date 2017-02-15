@@ -114,6 +114,8 @@ class Map {
     int getClosestFoodDistance(Position &p) const;
     long getDimension() const;
     double getScore() const;
+    bool wallBetweenCols(int row, int colBegin, int colEnd) const;
+    bool wallBetweenRows(int col, int rowBegin, int rowEnd) const;
 
 };
 

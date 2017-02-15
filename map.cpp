@@ -430,3 +430,17 @@ long Map::getDimension() const {
 double Map::getScore() const {
     return eatedFoodByEnemy * 10.0;
 }
+
+bool Map::wallBetweenCols(int row, int colBegin, int colEnd) const {
+    for (int i = colBegin; i < colEnd; i += 1) {
+        if (cells[row][i] == Wall) return true;
+    }
+    return false;
+}
+
+bool Map::wallBetweenRows(int col, int rowBegin, int rowEnd) const {
+    for (int i = rowBegin; i < rowEnd; i += 1) {
+        if (cells[i][col] == Wall) return true;
+    }
+    return false;
+}

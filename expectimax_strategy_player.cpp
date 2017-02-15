@@ -54,7 +54,6 @@ Direction ExpectimaxStrategyPlayer::minimax_decision(int depth) {
 }
 
 double ExpectimaxStrategyPlayer::evaluationFunction(Map &map) {
-
     double totalScore = map.getEatedFoodByPlayer() * 10;
     Position playerPosition = map.getPlayerPosition();
     set<Position> foodCells = map.getFoodCells();
