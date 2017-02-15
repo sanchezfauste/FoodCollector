@@ -31,9 +31,18 @@ make
 
 To run the game execute the command:
 ```
-./foodcollection <nRows> <nCols>
+./foodcollection <nRows> <nCols> [--training]
 ```
 Notice that `nRows` is the number of rows of the map and `nCols` is the number of cols of the map.
+
+# Key bindings
+
+- `ESC` exit the game.
+- The arrows moves the player tank.
+- `A`, `S`, `D`, `W` moves the player tank.
+- `R` restarts the map.
+- `T` switch the training mode on/off.
+- `J`, `K`, `L`, `I` moves the camera.
 
 # Arduino setup
 In order to run the game using the Arduino game controller you need to install the Arduino IDE and the following libraries:
