@@ -75,7 +75,8 @@ Point::Point(const GLfloat x, const GLfloat y, const GLfloat z) : x(x), y(y), z(
 Graphic::Graphic(bool training) : playerParticle(TankParticle(Graphic::defaultPlayerTankDirection)),
         enemyParticle(TankParticle(Graphic::defaultEnemyTankDirection)),
         bulletParticle(), enemyStrategy(NULL), playerStrategy(NULL),
-        angleAlpha(270), angleBeta(60), gameRunning(false), training(training) {
+        angleAlpha(270), angleBeta(60), gameRunning(false), training(training),
+        playerWins(0), enemyWins(0) {
     bulletPosition = new Position();
     speedFactor = 1.0;
     #ifdef ARDUINO
@@ -188,6 +189,7 @@ void Graphic::glutDisplay() {
             bulletPosition->col, bulletParticle, Graphic::bulletColor);
     }
     printScore(Graphic::scoreInfoPosition.width, Graphic::scoreInfoPosition.height);
+    printWins(7.5, height - 22.5);
     #ifdef ARDUINO
         printArduinoInfo();
     #endif
@@ -285,6 +287,9 @@ void Graphic::glutKeyboard(unsigned char key, int x, int y) {
             training = !training;
             break;
         case 27:
+            cout << endl << "Game exit. Showing final results:" << endl;
+            cout << "\tPlayer wins: " << playerWins << endl;
+            cout << "\tEnemy wins: " << enemyWins << endl;
             exit(0);
             break;
         case 'r':
@@ -734,6 +739,11 @@ void Graphic::glutIdle() {
             enemyStrategy->final();
             cout << "Player score: " << map->getEatedFoodByPlayer() << endl;
             cout << "Enemy score: " << map->getEatedFoodByEnemy() << endl << endl;
+            if (map->getEatedFoodByPlayer() > map->getEatedFoodByEnemy()) {
+                playerWins += 1;
+            } else if (map->getEatedFoodByPlayer() != map->getEatedFoodByEnemy()) {
+                enemyWins += 1;
+            }
             Map m = MapGenerator(map->getNumberOfRows(), map->getNumberOfCols()).getMap();
             setMap(m);
         }
@@ -882,4 +892,10 @@ void Graphic::positionObserver(float alpha, float beta, int radius) {
 
 void Graphic::setTraining(bool training) {
     this->training = training;
+}
+
+void Graphic::printWins(float width, float height) {
+    ostringstream convert;
+    convert << "Player wins: " << playerWins << " | Enemy wins: " << enemyWins;
+    printText(-this->width/2 + width, -this->height/2 + height, convert.str());
 }

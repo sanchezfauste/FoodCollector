@@ -88,6 +88,8 @@ class Graphic {
     bool gameRunning;
     bool training;
     double speedFactor;
+    int playerWins;
+    int enemyWins;
 
     #ifdef ARDUINO
         static const Size arduinoInfoPosition;
@@ -155,6 +157,7 @@ class Graphic {
     void drawFloor(int row, int col);
     void setSpotLight(GLenum light, Point p, const GLfloat* color);
     void setTraining(bool training);
+    void printWins(float width, float height);
 
 };
 
