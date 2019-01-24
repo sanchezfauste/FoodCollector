@@ -43,6 +43,8 @@ Notice that `nRows` is the number of rows of the map and `nCols` is the number o
 - `R` restarts the map.
 - `T` switch the training mode on/off.
 - `J`, `K`, `L`, `I` moves the camera.
+- `Spacebar` shots the tank.
+- `+` and `-` increase and decrease speed factor.
 
 # Arduino setup
 In order to run the game using the Arduino game controller you need to install the Arduino IDE and the following libraries:
