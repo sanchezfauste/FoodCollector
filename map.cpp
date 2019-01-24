@@ -94,9 +94,9 @@ list<Position> Map::getUnvisitedNeighbors(Position &p, set<Position> &visitedCel
     return unvisitedNeighbors;
 }
 
-Position Map::getRandomPositionOfList(list<Position> &Positions) {
-    int randomElement = rand() % Positions.size();
-    list<Position>::iterator p = Positions.begin();
+Position Map::getRandomPositionOfList(list<Position> &positions) {
+    int randomElement = rand() % positions.size();
+    list<Position>::iterator p = positions.begin();
     for (int i = 0; i < randomElement; ++p, i += 1) {}
     return *p;
 }
